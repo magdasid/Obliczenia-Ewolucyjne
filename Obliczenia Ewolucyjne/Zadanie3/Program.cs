@@ -19,17 +19,16 @@ namespace Zadanie3
             return -2 + genotype / Math.Pow(10, 9);
         }
     }
+
     public class Generation
     {
         public static Random random = new Random();
 
         public List<Individual> startingPopulation;
-        public List<Individual> newPopulation;
 
         public Generation(List<Individual> population)
         {
             startingPopulation = population;
-            newPopulation = CreateNewPopulation(population);
         }
 
         public double Fitness(double x)
@@ -40,12 +39,13 @@ namespace Zadanie3
         }
 
         // funkcja zwracająca rodziców
-        public List<Individual> TournamentSelection(List<Individual> population)
+        private List<Individual> TournamentSelection()
         {
-            List<Individual> parents = new List<Individual>();
-
-            parents[0] = FindParent(population);
-            parents[1] = FindParent(population);
+            List<Individual> parents = new List<Individual>
+            {
+                FindParent(),
+                FindParent()
+            };
 
             //Console.WriteLine("matka: " + Convert.ToString(parents[0], 2).PadLeft(32, '0'));
             //Console.WriteLine("ojciec: " + Convert.ToString(parents[1], 2).PadLeft(32, '0'));
@@ -54,18 +54,18 @@ namespace Zadanie3
         }
 
         // funkcja do znalezienia rodzica
-        public Individual FindParent(List<Individual> population)
+        private Individual FindParent()
         {
             Individual parent = null;
-            int size = population.Count;
+            int size = startingPopulation.Count;
             int index1 = random.Next(0, size);
             int index2 = random.Next(0, size);
 
-            var genotype1 = population[index1].genotype;
-            var genotype2 = population[index2].genotype;
+            var genotype1 = startingPopulation[index1].genotype;
+            var genotype2 = startingPopulation[index2].genotype;
 
-            var phenotype1 = population[index1].phenotype;
-            var phenotype2 = population[index2].phenotype;
+            var phenotype1 = startingPopulation[index1].phenotype;
+            var phenotype2 = startingPopulation[index2].phenotype;
 
             if (Fitness(phenotype1) > Fitness(phenotype2))
             {
@@ -80,7 +80,7 @@ namespace Zadanie3
         }
 
         // krzyżowanie osobników
-        public Individual CreateChild(List<Individual> parents)
+        private Individual CreateChild(List<Individual> parents)
         {
             int splitPoint = random.Next(1, 32);
             var mother = parents[0].genotype;
@@ -98,7 +98,7 @@ namespace Zadanie3
         }
 
         //mutacja 
-        public static Individual Mutation(Individual child)
+        private Individual Mutation(Individual child)
         {
             int bitToChange = random.Next(1, 33);
             uint mask = (uint)(1 << (bitToChange - 1));
@@ -109,35 +109,39 @@ namespace Zadanie3
 
             return mutatedChild;
         }
-        public List<Individual> CreateNewPopulation(List<Individual> startingPopulation)
+
+        public List<Individual> CreateNewPopulation()
         {
             List<Individual> newPop = new List<Individual>();
 
             for (int i = 0; i < startingPopulation.Count; i++)
             {
-                List<Individual> parents = TournamentSelection(startingPopulation);
+                List<Individual> parents = TournamentSelection();
                 Individual child = CreateChild(parents);
-                newPopulation[i] = Mutation(child);
+                newPop.Add(Mutation(child));
             }
+
+            startingPopulation = newPop;
             return newPop;
         }
-        public double[] FindBest(List<Individual> population)
+
+        public double[] FindBest()
         {
             double bestResult = 0;
             double x = 0;
             double[] result = new double[2];
 
-            for (int i = 0; i < population.Count - 1; i++)
+            for (int i = 0; i < startingPopulation.Count - 1; i++)
             {
-                if (Fitness(population[i].phenotype) > Fitness(population[i+1].phenotype))
+                if (Fitness(startingPopulation[i].phenotype) > Fitness(startingPopulation[i + 1].phenotype))
                 {
-                    bestResult = Fitness(population[i].phenotype);
-                    x = population[i].phenotype;
+                    bestResult = Fitness(startingPopulation[i].phenotype);
+                    x = startingPopulation[i].phenotype;
                 }
                 else
                 {
-                    bestResult = Fitness(population[i+1].phenotype);
-                    x = population[i+1].phenotype;
+                    bestResult = Fitness(startingPopulation[i + 1].phenotype);
+                    x = startingPopulation[i + 1].phenotype;
                 }
             }
 
@@ -146,26 +150,26 @@ namespace Zadanie3
             return result;
         }
     }
+
     public class Algorithm
     {
+        public static Random random = new Random();
+
         public int numberOfGenerations;
         public int numberOfExecution;
         public double[] arrayOfBestResults;
-        public List<Individual> startingPopulation = new List<Individual>();
-        public List<double> heaven = new List<double>();
-
-        public static Random random = new Random();
+        public List<Individual> currentPopulation;
+        public List<double> heaven;
 
         public Algorithm(int generation, int execution)
         {
             numberOfGenerations = generation;
             numberOfExecution = execution;
             arrayOfBestResults = new double[execution];
-            startingPopulation = GeneratePopulation();
         }
 
-        public List<Individual> GeneratePopulation()
-        { 
+        private List<Individual> GeneratePopulation()
+        {
             List<Individual> population = new List<Individual>(20);
 
             for (int i = 0; i < 20; i++)
@@ -183,29 +187,32 @@ namespace Zadanie3
             int i = 0;
             while (i < numberOfExecution)
             {
+                currentPopulation = GeneratePopulation();
+                heaven = new List<double>();
+
                 for (int j = 1; j <= numberOfGenerations; j++)
                 {
-                    Generation generation = new Generation(startingPopulation);
+                    Generation generation = new Generation(currentPopulation);
+                    currentPopulation = generation.CreateNewPopulation();
 
-                    startingPopulation = generation.newPopulation;
-                    /*
+                    var best = generation.FindBest();
+
                     if (heaven.Count != 0)
                     {
-                        if ((FindBest(newPopulation)[0]) > Fitness(heaven[0]))
+                        if (best[0] > generation.Fitness(heaven[0]))
                         {
-                            heaven[0] = FindBest(newPopulation)[1];
+                            heaven[0] = best[1];
                         }
                     }
                     else
                     {
-                        heaven.Add(FindBest(newPopulation)[1]);
+                        heaven.Add(best[1]);
                     }
 
-                    Console.WriteLine("Epoka: " + i + ", Najlepszy wynik: " + FindBest(newPopulation)[0] + ", x = " + FindBest(newPopulation)[1] + " ,niebo:" + heaven[0]);
-                */
+                    Console.WriteLine("Epoka: " + j + ", Najlepszy wynik: " + best[0] + ", x = " + best[1] + " ,niebo:" + heaven[0]);
                 }
 
-                arrayOfBestResults[numberOfExecution] = heaven[0];
+                arrayOfBestResults[i] = heaven[0];
                 i++;
             }
 
@@ -217,11 +224,11 @@ namespace Zadanie3
     {
         static void Main(string[] args)
         {
+            Algorithm algorithm = new Algorithm(1000, 1);
 
+            algorithm.Process();
 
             Console.ReadKey();
-
-
         }
     }
 }
