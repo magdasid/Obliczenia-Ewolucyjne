@@ -230,6 +230,35 @@ namespace Zadanie3
             return population;
         }
 
+        public double CountAverage(double[] results)
+        {
+            double sum = 0;
+
+            for (int i = 0; i < results.Length; i++)
+            {
+                sum += results[i];
+            }
+
+            return sum / results.Length;
+        }
+
+        public double CountMedian(double[] results)
+        {
+            Array.Sort(results);
+            int middleIndex = results.Length / 2;
+            double median = 0;
+
+            if (results.Length % 2 != 0)
+            {
+                median = results[middleIndex];
+            }
+            else
+            {
+                median = (results[middleIndex] + results[middleIndex - 1]) / 2;
+            }
+            return median;
+        }
+
         public void Process()
         {
             int i = 0;
@@ -264,6 +293,8 @@ namespace Zadanie3
                 i++;
             }
 
+            Console.WriteLine("mediana: " + CountMedian(arrayOfBestResults));
+            Console.WriteLine("średnia: " + CountAverage(arrayOfBestResults));
         }
 
     }
