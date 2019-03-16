@@ -26,10 +26,12 @@ namespace Zadanie3
 
         public List<Individual> startingPopulation;
         public AlgorithmType typeOfAlgorithm;
+        public double probabilityOfMutation; 
 
-        public Generation(List<Individual> population, AlgorithmType type)
+        public Generation(List<Individual> population, double probability, AlgorithmType type)
         {
             startingPopulation = population;
+            probabilityOfMutation = probability;
             typeOfAlgorithm = type;
         }
 
@@ -102,6 +104,11 @@ namespace Zadanie3
         //mutacja 
         private Individual Mutation(Individual child)
         {
+            if (random.NextDouble() > probabilityOfMutation)
+            {
+                return child;
+            }
+
             int bitToChange = random.Next(1, 33);
             uint mask = (uint)(1 << (bitToChange - 1));
             Individual mutatedChild = new Individual(child.genotype ^ mask);
@@ -196,13 +203,15 @@ namespace Zadanie3
         public int numberOfExecution;
         public double[] arrayOfBestResults;
         public AlgorithmType typeOfAlgorithm;
+        public double probabilityOfMutation;
         public List<Individual> currentPopulation;
         public List<double> heaven;
 
-        public Algorithm(int generation, int execution, AlgorithmType type)
+        public Algorithm(int generation, int execution, double probability, AlgorithmType type)
         {
             numberOfGenerations = generation;
             numberOfExecution = execution;
+            probabilityOfMutation = probability;
             typeOfAlgorithm = type;
             arrayOfBestResults = new double[execution];
         }
@@ -231,7 +240,7 @@ namespace Zadanie3
 
                 for (int j = 1; j <= numberOfGenerations; j++)
                 {
-                    Generation generation = new Generation(currentPopulation, typeOfAlgorithm);
+                    Generation generation = new Generation(currentPopulation, probabilityOfMutation, typeOfAlgorithm);
                     currentPopulation = generation.CreateNewPopulation();
 
                     var best = generation.FindBest();
@@ -263,7 +272,7 @@ namespace Zadanie3
     {
         static void Main(string[] args)
         {
-            Algorithm algorithm = new Algorithm(1000, 1, AlgorithmType.RemoveChildOutOfBoundary);
+            Algorithm algorithm = new Algorithm(1000, 1, 0.1 ,AlgorithmType.RemoveChildOutOfBoundary);
 
             algorithm.Process();
 
