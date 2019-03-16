@@ -121,15 +121,38 @@ namespace Zadanie3
             }
             return newPop;
         }
+        public double[] FindBest(List<Individual> population)
+        {
+            double bestResult = 0;
+            double x = 0;
+            double[] result = new double[2];
 
+            for (int i = 0; i < population.Count - 1; i++)
+            {
+                if (Fitness(population[i].phenotype) > Fitness(population[i+1].phenotype))
+                {
+                    bestResult = Fitness(population[i].phenotype);
+                    x = population[i].phenotype;
+                }
+                else
+                {
+                    bestResult = Fitness(population[i+1].phenotype);
+                    x = population[i+1].phenotype;
+                }
+            }
+
+            result[0] = bestResult;
+            result[1] = x;
+            return result;
+        }
     }
     public class Algorithm
     {
         public int numberOfGenerations;
         public int numberOfExecution;
-        List<double> heaven = new List<double>();
         public double[] arrayOfBestResults;
         public List<Individual> startingPopulation = new List<Individual>();
+        public List<double> heaven = new List<double>();
 
         public static Random random = new Random();
 
@@ -155,6 +178,38 @@ namespace Zadanie3
             return population;
         }
 
+        public void Process()
+        {
+            int i = 0;
+            while (i < numberOfExecution)
+            {
+                for (int j = 1; j <= numberOfGenerations; j++)
+                {
+                    Generation generation = new Generation(startingPopulation);
+
+                    startingPopulation = generation.newPopulation;
+                    /*
+                    if (heaven.Count != 0)
+                    {
+                        if ((FindBest(newPopulation)[0]) > Fitness(heaven[0]))
+                        {
+                            heaven[0] = FindBest(newPopulation)[1];
+                        }
+                    }
+                    else
+                    {
+                        heaven.Add(FindBest(newPopulation)[1]);
+                    }
+
+                    Console.WriteLine("Epoka: " + i + ", Najlepszy wynik: " + FindBest(newPopulation)[0] + ", x = " + FindBest(newPopulation)[1] + " ,niebo:" + heaven[0]);
+                */
+                }
+
+                arrayOfBestResults[numberOfExecution] = heaven[0];
+                i++;
+            }
+
+        }
 
     }
 
