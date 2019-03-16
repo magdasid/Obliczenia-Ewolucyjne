@@ -25,10 +25,12 @@ namespace Zadanie3
         public static Random random = new Random();
 
         public List<Individual> startingPopulation;
+        public AlgorithmType typeOfAlgorithm;
 
-        public Generation(List<Individual> population)
+        public Generation(List<Individual> population, AlgorithmType type)
         {
             startingPopulation = population;
+            typeOfAlgorithm = type;
         }
 
         public double Fitness(double x)
@@ -118,7 +120,40 @@ namespace Zadanie3
             {
                 List<Individual> parents = TournamentSelection();
                 Individual child = CreateChild(parents);
-                newPop.Add(Mutation(child));
+                Individual mutatedChild = Mutation(child);
+
+                switch (typeOfAlgorithm)
+                {
+                    case AlgorithmType.Default:
+                        newPop.Add(mutatedChild);
+                        break;
+
+                    case AlgorithmType.RemoveChildOutOfBoundary:
+                        if (mutatedChild.phenotype > 2.0)
+                        {
+                            i--;
+                        }
+                        else
+                        {
+                            newPop.Add(mutatedChild);
+                        }
+                        break;
+
+                    case AlgorithmType.ChangePhenotypeToBoundaryValue:
+                        if (mutatedChild.phenotype > 2.0)
+                        {
+                            mutatedChild.phenotype = 2.0;
+                            mutatedChild.genotype = 4000000000;
+
+                            newPop.Add(mutatedChild);
+                        }
+                        else
+                        {
+                            newPop.Add(mutatedChild);
+                        }
+                        break;
+                }
+
             }
 
             startingPopulation = newPop;
@@ -151,6 +186,8 @@ namespace Zadanie3
         }
     }
 
+    public enum AlgorithmType { Default, RemoveChildOutOfBoundary, ChangePhenotypeToBoundaryValue };
+
     public class Algorithm
     {
         public static Random random = new Random();
@@ -158,13 +195,15 @@ namespace Zadanie3
         public int numberOfGenerations;
         public int numberOfExecution;
         public double[] arrayOfBestResults;
+        public AlgorithmType typeOfAlgorithm;
         public List<Individual> currentPopulation;
         public List<double> heaven;
 
-        public Algorithm(int generation, int execution)
+        public Algorithm(int generation, int execution, AlgorithmType type)
         {
             numberOfGenerations = generation;
             numberOfExecution = execution;
+            typeOfAlgorithm = type;
             arrayOfBestResults = new double[execution];
         }
 
@@ -192,7 +231,7 @@ namespace Zadanie3
 
                 for (int j = 1; j <= numberOfGenerations; j++)
                 {
-                    Generation generation = new Generation(currentPopulation);
+                    Generation generation = new Generation(currentPopulation, typeOfAlgorithm);
                     currentPopulation = generation.CreateNewPopulation();
 
                     var best = generation.FindBest();
@@ -224,7 +263,7 @@ namespace Zadanie3
     {
         static void Main(string[] args)
         {
-            Algorithm algorithm = new Algorithm(1000, 1);
+            Algorithm algorithm = new Algorithm(1000, 1, AlgorithmType.RemoveChildOutOfBoundary);
 
             algorithm.Process();
 
