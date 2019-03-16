@@ -125,14 +125,21 @@ namespace Zadanie3
     }
     public class Algorithm
     {
-        public static Random random = new Random();
+        public int numberOfGenerations;
+        public int numberOfExecution;
+        List<double> heaven = new List<double>();
+        public double[] arrayOfBestResults;
         public List<Individual> startingPopulation = new List<Individual>();
 
-        public Algorithm()
+        public static Random random = new Random();
+
+        public Algorithm(int generation, int execution)
         {
+            numberOfGenerations = generation;
+            numberOfExecution = execution;
+            arrayOfBestResults = new double[execution];
             startingPopulation = GeneratePopulation();
         }
-
 
         public List<Individual> GeneratePopulation()
         { 
@@ -147,18 +154,15 @@ namespace Zadanie3
             }
             return population;
         }
+
+
     }
 
     class Program
     {
         static void Main(string[] args)
         {
-            Algorithm algorithm = new Algorithm();
 
-            for (int i = 0; i < algorithm.startingPopulation.Count; i++)
-            {
-                Console.WriteLine("osobnik:" + algorithm.startingPopulation[i].genotype);
-            }
 
             Console.ReadKey();
 
