@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Zadanie3
 {
@@ -258,9 +259,22 @@ namespace Zadanie3
             }
             return median;
         }
+        /*
+        public double ConfidenceIntervals(double[] results)
+        {
+            // górny przedział: średnia + (błąd standardowy * 1,96)
+
+            // dolna granica: średnia - (błąd standardowy * 1,96) 
+
+            // błąd standardowy: Błąd standardowy = (1,253*s)/√N, s to odchylenie standardowe, N - liczebosc
+        
+        } */
 
         public void Process()
         {
+            Stopwatch stopwatch = new Stopwatch();
+
+            stopwatch.Start();
             int i = 0;
             while (i < numberOfExecution)
             {
@@ -286,15 +300,18 @@ namespace Zadanie3
                         heaven.Add(best[1]);
                     }
 
-                    Console.WriteLine("Epoka: " + j + ", Najlepszy wynik: " + best[0] + ", x = " + best[1] + " ,niebo:" + heaven[0]);
+                    //Console.WriteLine("Epoka: " + j + ", Najlepszy wynik: " + best[0] + ", x = " + best[1] + " ,niebo:" + heaven[0]);
                 }
 
                 arrayOfBestResults[i] = heaven[0];
                 i++;
             }
-
+            stopwatch.Stop();
+            Console.WriteLine("niebo: " + heaven[0] );
             Console.WriteLine("mediana: " + CountMedian(arrayOfBestResults));
             Console.WriteLine("średnia: " + CountAverage(arrayOfBestResults));
+            Console.WriteLine("czas wykonania: " + stopwatch.Elapsed);
+            Console.WriteLine("#####################");
         }
 
     }
@@ -303,9 +320,21 @@ namespace Zadanie3
     {
         static void Main(string[] args)
         {
-            Algorithm algorithm = new Algorithm(1000, 1, 0.1 ,AlgorithmType.RemoveChildOutOfBoundary);
 
-            algorithm.Process();
+            Algorithm algorithm1 = new Algorithm(10000, 100, 0.1 ,AlgorithmType.Default);
+
+            Console.WriteLine("Wyniki ALGORYTM 1");
+            algorithm1.Process();
+
+            Algorithm algorithm2 = new Algorithm(10000, 100, 0.1, AlgorithmType.ChangePhenotypeToBoundaryValue);
+
+            Console.WriteLine("Wyniki ALGORYTM 2");
+            algorithm2.Process();
+
+            Algorithm algorithm3 = new Algorithm(10000, 100, 0.1, AlgorithmType.RemoveChildOutOfBoundary);
+
+            Console.WriteLine("Wyniki ALGORYTM 3");
+            algorithm3.Process();
 
             Console.ReadKey();
         }
