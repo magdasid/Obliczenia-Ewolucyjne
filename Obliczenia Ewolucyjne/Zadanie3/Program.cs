@@ -203,6 +203,9 @@ namespace Zadanie3
         public int numberOfGenerations;
         public int numberOfExecution;
         public double[] arrayOfBestResults;
+        public int GenerationWhere80PercetangeBestAchieved = 0;
+        public int GenerationWhere90PercetangeBestAchieved = 0;
+        public int GenerationWhere95PercetangeBestAchieved = 0;
         public AlgorithmType typeOfAlgorithm;
         public double probabilityOfMutation;
         public List<Individual> currentPopulation;
@@ -270,6 +273,31 @@ namespace Zadanie3
         
         } */
 
+        public void CheckPercentage(double current, int currentEpoche)
+        {
+            if (heaven.Count == 0)
+                return;
+
+            var best80Percentage = 0.8 * heaven[0];
+            var best90Percentage = 0.9 * heaven[0];
+            var best95Percentage = 0.95 * heaven[0];
+
+            if (GenerationWhere80PercetangeBestAchieved == 0 && current >= best80Percentage)
+            {
+                // lepszy niż 80% najlepszego
+                GenerationWhere80PercetangeBestAchieved = currentEpoche;
+            }
+            if (GenerationWhere90PercetangeBestAchieved == 0 && current >= best90Percentage)
+            {
+                // lepszy niż 90% najlepszego
+                GenerationWhere90PercetangeBestAchieved = currentEpoche;
+            }
+            if (GenerationWhere95PercetangeBestAchieved == 0 && current >= best95Percentage)
+            {
+                // lepszy niż 95% najlepszego
+                GenerationWhere95PercetangeBestAchieved = currentEpoche;
+            }
+        }
         public void Process()
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -279,6 +307,10 @@ namespace Zadanie3
             while (i < numberOfExecution)
             {
                 currentPopulation = GeneratePopulation();
+                GenerationWhere80PercetangeBestAchieved = 0;
+                GenerationWhere90PercetangeBestAchieved = 0;
+                GenerationWhere95PercetangeBestAchieved = 0;
+
                 heaven = new List<double>();
 
                 for (int j = 1; j <= numberOfGenerations; j++)
@@ -287,6 +319,7 @@ namespace Zadanie3
                     currentPopulation = generation.CreateNewPopulation();
 
                     var best = generation.FindBest();
+                    CheckPercentage(best[1], j);
 
                     if (heaven.Count != 0)
                     {
@@ -300,6 +333,7 @@ namespace Zadanie3
                         heaven.Add(best[1]);
                     }
 
+
                     //Console.WriteLine("Epoka: " + j + ", Najlepszy wynik: " + best[0] + ", x = " + best[1] + " ,niebo:" + heaven[0]);
                 }
 
@@ -312,6 +346,9 @@ namespace Zadanie3
             Console.WriteLine("średnia: " + CountAverage(arrayOfBestResults));
             Console.WriteLine("czas wykonania: " + stopwatch.Elapsed);
             Console.WriteLine("#####################");
+            Console.WriteLine($"80% najlepszego zostało osiągnięte w {GenerationWhere80PercetangeBestAchieved} epoce");
+            Console.WriteLine($"90% najlepszego zostało osiągnięte w {GenerationWhere90PercetangeBestAchieved} epoce");
+            Console.WriteLine($"95% najlepszego zostało osiągnięte w {GenerationWhere95PercetangeBestAchieved} epoce");
         }
 
     }
@@ -321,17 +358,17 @@ namespace Zadanie3
         static void Main(string[] args)
         {
 
-            Algorithm algorithm1 = new Algorithm(10000, 100, 0.1 ,AlgorithmType.Default);
+            Algorithm algorithm1 = new Algorithm(10000, 1, 0.1 ,AlgorithmType.Default);
 
             Console.WriteLine("Wyniki ALGORYTM 1");
             algorithm1.Process();
 
-            Algorithm algorithm2 = new Algorithm(10000, 100, 0.1, AlgorithmType.ChangePhenotypeToBoundaryValue);
+            Algorithm algorithm2 = new Algorithm(10000, 1, 0.1, AlgorithmType.ChangePhenotypeToBoundaryValue);
 
             Console.WriteLine("Wyniki ALGORYTM 2");
             algorithm2.Process();
 
-            Algorithm algorithm3 = new Algorithm(10000, 100, 0.1, AlgorithmType.RemoveChildOutOfBoundary);
+            Algorithm algorithm3 = new Algorithm(1000, 10, 0.1, AlgorithmType.RemoveChildOutOfBoundary);
 
             Console.WriteLine("Wyniki ALGORYTM 3");
             algorithm3.Process();
