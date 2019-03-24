@@ -35,20 +35,153 @@ namespace Zadanie4
             return value;
         }
     }
+    public interface IParentSelection
+    {
+        Individual FindParent(List<Individual> population);
+    }
+
+    public class TournamentSelection : IParentSelection
+    {
+        private Random random;
+
+        public TournamentSelection(Random random)
+        {
+            this.random = random;
+        }
+
+        public Individual FindParent(List<Individual> population)
+        {
+            Individual parent = null;
+            int size = population.Count;
+            int index1 = random.Next(0, size);
+            int index2 = random.Next(0, size);
+            
+            if (population[index1].fitnessValue > population[index2].fitnessValue)
+            {
+                parent = population[index1];
+            }
+            else
+            {
+                parent = population[index2];
+            }
+
+            return parent;
+        }
+    }
+
+    public class Roulette1Selection : IParentSelection
+    {
+        private Random random;
+
+        public Roulette1Selection(Random random)
+        {
+            this.random = random;
+        }
+
+        public Individual FindParent(List<Individual> population)
+        {
+            // liczymy funkcje dopasowania dlanaszych osobników
+            Individual parent = null;
+            double sum = 0;
+            double min = 0;
+            double[] arrayOfFittnes = new double[20];
+
+            for (int i = 0; i < population.Count; i++)
+            {
+                arrayOfFittnes[i] = population[i].fitnessValue;
+
+                if (arrayOfFittnes[i] < min)
+                {
+                    min = arrayOfFittnes[i];
+                }
+            }
+
+            for (int i = 0; i < arrayOfFittnes.Length; i++)
+            {
+                arrayOfFittnes[i] = arrayOfFittnes[i] + (-1) * min;
+                sum += arrayOfFittnes[i];
+
+            }
+
+            double randomElement = random.NextDouble();
+            double partialSum = 0;
+            int j = 0;
+
+            while (partialSum < randomElement)
+            {
+                partialSum += arrayOfFittnes[j] / sum;
+
+                parent = population[j];
+                j++;
+            }
+
+            return parent;
+        }
+    }
+
+    public class Roulette2Selection : IParentSelection
+    {
+        private Random random;
+
+        public Roulette2Selection(Random random)
+        {
+            this.random = random;
+        }
+
+        public Individual FindParent(List<Individual> population)
+        {
+            // liczymy funkcje dopasowania dlanaszych osobników
+            Individual parent = null;
+            Individual[] individuals = new Individual[20];
+
+            for (int i = 0; i < population.Count; i++)
+            {
+                individuals[i] = population[i];
+            }
+
+            Array.Sort(individuals, (x, y) => {
+                if (x.fitnessValue > y.fitnessValue)
+                {
+                    return -1;
+                }
+                else if (x.fitnessValue < y.fitnessValue)
+                {
+                    return 1;
+                }
+                return 0;
+            });
+
+            double partialSum = 0;
+            int sum = (individuals.Length * (individuals.Length + 1)) / 2;
+            double randomElement = random.NextDouble() * sum;
+            int j = 0;
+
+            while (partialSum < randomElement)
+            {
+                partialSum += individuals.Length - j;
+                parent = individuals[j];
+                j++;
+            }
+
+            return parent;
+        }
+    }
 
     public class Generation
     {
         public static Random random = new Random();
+        private IParentSelection parentSelection;
 
         public List<Individual> startingPopulation;
         public AlgorithmType typeOfAlgorithm;
         public double probabilityOfMutation;
 
-        public Generation(List<Individual> population, double probability, AlgorithmType type)
+        public Generation(List<Individual> population, double probability, AlgorithmType type, IParentSelection parentSelection)
         {
             startingPopulation = population;
             probabilityOfMutation = probability;
             typeOfAlgorithm = type;
+            this.parentSelection = parentSelection; 
         }
 
         public double Fitness(double x)
@@ -63,154 +196,14 @@ namespace Zadanie4
         {
             List<Individual> parents = new List<Individual>
             {
-                Tournament(),
-                Tournament()
+                parentSelection.FindParent(startingPopulation),
+                parentSelection.FindParent(startingPopulation)
             };
 
             //Console.WriteLine("matka: " + Convert.ToString(parents[0], 2).PadLeft(32, '0'));
             //Console.WriteLine("ojciec: " + Convert.ToString(parents[1], 2).PadLeft(32, '0'));
 
             return parents;
-        }
-
-        private Individual Roulette1()
-        {
-            // liczymy funkcje dopasowania dlanaszych osobników
-
-            Individual parent = null;
-            double sum = 0;
-            double min = 0;
-            double[] arrayOfFittnes = new double[20];
-
-            for (int i = 0; i < startingPopulation.Count; i++)
-            {
-                arrayOfFittnes[i] = startingPopulation[i].fitnessValue;
-
-                if (arrayOfFittnes[i] < min)
-                {
-                    min = arrayOfFittnes[i];
-                }
-            }
-
-            for (int i = 0; i < arrayOfFittnes.Length; i++)
-            {
-                Console.WriteLine("przed:" + arrayOfFittnes[i]);
-            }
-
-            for (int i = 0; i < arrayOfFittnes.Length; i++)
-            {
-                arrayOfFittnes[i] = arrayOfFittnes[i] + (-1) * min;
-                sum += arrayOfFittnes[i];
-
-            }
-
-            for (int i = 0; i < arrayOfFittnes.Length; i++)
-            {
-                Console.WriteLine("po:" + arrayOfFittnes[i]);
-            }
-
-            double randomElement = random.NextDouble();
-
-            Console.WriteLine("random:" + randomElement);
-
-            double partialSum = 0;
-            int j = 0;
-
-            while (partialSum < randomElement)
-            {
-                partialSum += arrayOfFittnes[j] / sum;
-                Console.WriteLine("partial sum" + partialSum);
-
-                parent = startingPopulation[j];
-                Console.WriteLine("wynik:" + j);
-                j++;
-            }
-
-            return parent;
-        }
-
-        private Individual Roulette2()
-        {
-            // liczymy funkcje dopasowania dlanaszych osobników
-
-            Individual parent = null;
-            Individual[] individuals = new Individual[20];
-
-            for (int i = 0; i < startingPopulation.Count; i++)
-            {
-                individuals[i] = startingPopulation[i];
-
-            }
-
-            Array.Sort(individuals, (x, y) => {
-                if (x.fitnessValue > y.fitnessValue)
-                {
-                    return -1;
-                }
-                return 0;
-            });
-
-            // tylko do wyswietlenia
-            for (int i = 0; i < startingPopulation.Count; i++)
-            {
-
-                Console.WriteLine(individuals[i].fitnessValue);
-            }
-
-            double partialSum = 0;
-
-            int sum = 0;
-
-
-            for (int i = 1; i < individuals.Length + 1; i++)
-            {
-                sum += i;
-            }
-
-            double randomElement = random.NextDouble() * sum;
-
-            Console.WriteLine("random:" + randomElement);
-
-
-            int j = 0;
-
-            while (partialSum < randomElement)
-            {
-                partialSum += 20 - j;
-                Console.WriteLine("partial sum" + partialSum);
-
-                parent = individuals[j];
-                Console.WriteLine("wynik:" + individuals[j].fitnessValue);
-                j++;
-            }
-
-            return parent;
-        }
-
-        // funkcja do znalezienia rodzica
-        private Individual Tournament()
-        {
-            Individual parent = null;
-            int size = startingPopulation.Count;
-            int index1 = random.Next(0, size);
-            int index2 = random.Next(0, size);
-
-            var genotype1 = startingPopulation[index1].genotype;
-            var genotype2 = startingPopulation[index2].genotype;
-
-            var phenotype1 = startingPopulation[index1].phenotype;
-            var phenotype2 = startingPopulation[index2].phenotype;
-
-            if (Fitness(phenotype1) > Fitness(phenotype2))
-            {
-                parent = new Individual(genotype1);
-            }
-            else
-            {
-                parent = new Individual(genotype2);
-            }
-
-            return parent;
         }
 
         // krzyżowanie osobników
@@ -230,7 +223,6 @@ namespace Zadanie4
 
             return child;
         }
-
         //mutacja 
         private Individual Mutation(Individual child)
         {
@@ -294,9 +286,7 @@ namespace Zadanie4
             }
 
             startingPopulation = newPop;
-
-            Roulette2();
-
+            
             return newPop;
         }
 
@@ -339,17 +329,19 @@ namespace Zadanie4
         public int GenerationWhere90PercetangeBestAchieved = 0;
         public int GenerationWhere95PercetangeBestAchieved = 0;
         public AlgorithmType typeOfAlgorithm;
+        public IParentSelection parentSelection;
         public double probabilityOfMutation;
         public List<Individual> currentPopulation;
         public List<double> heaven;
 
-        public Algorithm(int generation, int execution, double probability, AlgorithmType type)
+        public Algorithm(int generation, int execution, double probability, AlgorithmType type, IParentSelection parentSelection)
         {
             numberOfGenerations = generation;
             numberOfExecution = execution;
             probabilityOfMutation = probability;
             typeOfAlgorithm = type;
             arrayOfBestResults = new double[execution];
+            this.parentSelection = parentSelection;
         }
 
         private List<Individual> GeneratePopulation()
@@ -361,7 +353,6 @@ namespace Zadanie4
                 uint genotype = (uint)random.Next();
                 Individual individual = new Individual(genotype);
                 population.Add(individual);
-
             }
             return population;
         }
@@ -404,7 +395,6 @@ namespace Zadanie4
             // błąd standardowy: Błąd standardowy = (1,253*s)/√N, s to odchylenie standardowe, N - liczebosc
         
         } */
-
         public void CheckPercentage(double current, int currentEpoche)
         {
             if (heaven.Count == 0)
@@ -430,6 +420,7 @@ namespace Zadanie4
                 GenerationWhere95PercetangeBestAchieved = currentEpoche;
             }
         }
+
         public void Process()
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -442,12 +433,11 @@ namespace Zadanie4
                 GenerationWhere80PercetangeBestAchieved = 0;
                 GenerationWhere90PercetangeBestAchieved = 0;
                 GenerationWhere95PercetangeBestAchieved = 0;
-
                 heaven = new List<double>();
 
                 for (int j = 1; j <= numberOfGenerations; j++)
                 {
-                    Generation generation = new Generation(currentPopulation, probabilityOfMutation, typeOfAlgorithm);
+                    Generation generation = new Generation(currentPopulation, probabilityOfMutation, typeOfAlgorithm, parentSelection);
                     currentPopulation = generation.CreateNewPopulation();
 
                     var best = generation.FindBest();
@@ -464,8 +454,6 @@ namespace Zadanie4
                     {
                         heaven.Add(best[1]);
                     }
-
-
                     //Console.WriteLine("Epoka: " + j + ", Najlepszy wynik: " + best[0] + ", x = " + best[1] + " ,niebo:" + heaven[0]);
                 }
 
@@ -490,8 +478,7 @@ namespace Zadanie4
         static void Main(string[] args)
         {
 
-            Algorithm algorithm1 = new Algorithm(1, 1, 0.1, AlgorithmType.Default);
-
+            Algorithm algorithm1 = new Algorithm(1000, 1, 0.1, AlgorithmType.Default, new TournamentSelection(new Random()));
 
             Console.WriteLine("Wyniki ALGORYTM 1");
             algorithm1.Process();
