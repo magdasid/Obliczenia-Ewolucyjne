@@ -8,6 +8,7 @@ Do zaimplementowania i przebadania różne sposoby selekcji:
 - ruletka, 
 - ruletka rankingowa.
 */
+
 namespace Zadanie4
 {
     public class Individual
@@ -20,14 +21,13 @@ namespace Zadanie4
         {
             genotype = g;
             phenotype = Phenotype(g);
-            fitnessValue = Fitness(Phenotype(g));
+            fitnessValue = Fitness(g);
         }
 
         public double Phenotype(uint genotype)
         {
             return -2 + genotype / Math.Pow(10, 9);
         }
-
         public double Fitness(double x)
         {
             double value = 0;
@@ -40,17 +40,26 @@ namespace Zadanie4
         Individual FindParent(List<Individual> population);
     }
 
+<<<<<<< Updated upstream
     public class TournamentSelection : IParentSelection
     {
         private Random random;
 
         public TournamentSelection(Random random)
+=======
+        public List<Individual> startingPopulation;
+        public AlgorithmType typeOfAlgorithm;
+        public double probabilityOfMutation;
+
+        public Generation(List<Individual> population, double probability, AlgorithmType type)
+>>>>>>> Stashed changes
         {
             this.random = random;
         }
 
         public Individual FindParent(List<Individual> population)
         {
+<<<<<<< Updated upstream
             Individual parent = null;
             int size = population.Count;
             int index1 = random.Next(0, size);
@@ -64,6 +73,21 @@ namespace Zadanie4
             {
                 parent = population[index2];
             }
+=======
+            double value = 0;
+            value = x * Math.Sin(x) * Math.Sin(10 * x);
+            return value;
+        }
+
+        // funkcja zwracająca rodziców
+        private List<Individual> TournamentSelection()
+        {
+            List<Individual> parents = new List<Individual>
+            {
+                FindParent(),
+                FindParent()
+            };
+>>>>>>> Stashed changes
 
             return parent;
         }
@@ -78,6 +102,7 @@ namespace Zadanie4
             this.random = random;
         }
 
+<<<<<<< Updated upstream
         public Individual FindParent(List<Individual> population)
         {
             // liczymy funkcje dopasowania dlanaszych osobników
@@ -124,6 +149,9 @@ namespace Zadanie4
         private Random random;
 
         public Roulette2Selection(Random random)
+=======
+        private Individual Roulette2()
+>>>>>>> Stashed changes
         {
             this.random = random;
         }
@@ -152,7 +180,13 @@ namespace Zadanie4
             });
 
             double partialSum = 0;
+<<<<<<< Updated upstream
             int sum = (individuals.Length * (individuals.Length + 1)) / 2;
+=======
+
+            int sum = (individuals.Length * (individuals.Length + 1)) / 2;
+
+>>>>>>> Stashed changes
             double randomElement = random.NextDouble() * sum;
             int j = 0;
 
@@ -167,10 +201,20 @@ namespace Zadanie4
         }
     }
 
+<<<<<<< Updated upstream
     public class Generation
     {
         public static Random random = new Random();
         private IParentSelection parentSelection;
+=======
+        // funkcja do znalezienia rodzica
+        private Individual FindParent()
+        {
+            Individual parent = null;
+            int size = startingPopulation.Count;
+            int index1 = random.Next(0, size);
+            int index2 = random.Next(0, size);
+>>>>>>> Stashed changes
 
         public List<Individual> startingPopulation;
         public AlgorithmType typeOfAlgorithm;
@@ -247,7 +291,7 @@ namespace Zadanie4
 
             for (int i = 0; i < startingPopulation.Count; i++)
             {
-                List<Individual> parents = FindParents();
+                List<Individual> parents = TournamentSelection();
                 Individual child = CreateChild(parents);
                 Individual mutatedChild = Mutation(child);
 
@@ -286,7 +330,10 @@ namespace Zadanie4
             }
 
             startingPopulation = newPop;
+<<<<<<< Updated upstream
             
+=======
+>>>>>>> Stashed changes
             return newPop;
         }
 
@@ -478,13 +525,17 @@ namespace Zadanie4
         static void Main(string[] args)
         {
 
+<<<<<<< Updated upstream
             Algorithm algorithm1 = new Algorithm(1000, 1, 0.1, AlgorithmType.Default, new TournamentSelection(new Random()));
 
+=======
+            Algorithm algorithm1 = new Algorithm(10000, 1, 0.1, AlgorithmType.Default);
+
+>>>>>>> Stashed changes
             Console.WriteLine("Wyniki ALGORYTM 1");
             algorithm1.Process();
 
             /*
-
             Algorithm algorithm2 = new Algorithm(10000, 1, 0.1, AlgorithmType.ChangePhenotypeToBoundaryValue);
 
             Console.WriteLine("Wyniki ALGORYTM 2");
@@ -493,8 +544,8 @@ namespace Zadanie4
             Algorithm algorithm3 = new Algorithm(1000, 10, 0.1, AlgorithmType.RemoveChildOutOfBoundary);
 
             Console.WriteLine("Wyniki ALGORYTM 3");
-            algorithm3.Process();
-            */
+            algorithm3.Process(); */
+
             Console.ReadKey();
         }
     }

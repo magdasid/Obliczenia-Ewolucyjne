@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
+/*
+Do zaimplementowania i przebadania różne sposoby selekcji: 
+- turniej, 
+- ruletka, 
+- ruletka rankingowa.
+*/
 namespace Zadanie3
 {
     public class Individual
