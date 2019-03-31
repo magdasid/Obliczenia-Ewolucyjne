@@ -1,0 +1,85 @@
+Typ algorytmu: Default
+Wybór rodzica metodą: Selekcja metodą ruletka2
+Prawdopodobieństwo mutacji: 0,1
+Liczba pokoleń: 1000
+Wywołano: niedziela, 31 marca 2019 13:56:37
+Mediana z najlepszych: -1,731564544
+Średnia z najlepszych: -1,3559379034
+Odchylenie standardowe najlepszych wyników: 1,1274899351406
+Przedziały ufności: (-2,05476340525613, -0,657112401543874)
+Czas wykonania: 00:00:00.7590541 (759ms)
+#####################
+80% najlepszego zostało osiągnięte w 5 epoce
+90% najlepszego zostało osiągnięte w 5 epoce
+95% najlepszego zostało osiągnięte w 2 epoce
+Liczba wykonań programu: 10
+--------------------------------------------
+
+Typ algorytmu: Default
+Wybór rodzica metodą: Selekcja metodą ruletka2
+Prawdopodobieństwo mutacji: 0,1
+Liczba pokoleń: 1000
+Wywołano: niedziela, 31 marca 2019 13:58:38
+Mediana z najlepszych: -1,732021037
+Średnia z najlepszych: -1,7318655582
+Odchylenie standardowe najlepszych wyników: 0,0002470206760685
+Przedziały ufności: (-1,73201866320124, -1,73171245319876)
+Czas wykonania: 00:00:00.7623027 (762ms)
+#####################
+80% najlepszego zostało osiągnięte w 0 epoce
+90% najlepszego zostało osiągnięte w 0 epoce
+95% najlepszego zostało osiągnięte w 0 epoce
+Liczba wykonań programu: 10
+--------------------------------------------
+
+Typ algorytmu: Default
+Wybór rodzica metodą: Selekcja metodą ruletka rankingowa
+Prawdopodobieństwo mutacji: 0,1
+Liczba pokoleń: 1000
+Wywołano: niedziela, 31 marca 2019 14:16:25
+Mediana z najlepszych: -1,731564544
+Średnia z najlepszych: -1,7317545987
+Odchylenie standardowe najlepszych wyników: 0,000235291980055833
+Przedziały ufności: (-1,73190043418014, -1,73160876321986)
+Czas wykonania: 00:00:00.7096068 (709ms)
+#####################
+80% najlepszego zostało osiągnięte w 2 epoce
+90% najlepszego zostało osiągnięte w 2 epoce
+95% najlepszego zostało osiągnięte w 2 epoce
+Liczba wykonań programu: 10
+--------------------------------------------
+
+Typ algorytmu: Default
+Wybór rodzica metodą: Selekcja metodą ruletka rankingowa
+Prawdopodobieństwo mutacji: 0,1
+Liczba pokoleń: 1000
+Wywołano: niedziela, 31 marca 2019 14:16:51
+Mediana z najlepszych: -1,732023297
+Średnia z najlepszych: -1,7319116807
+Odchylenie standardowe najlepszych wyników: 0,000228902823105775
+Przedziały ufności: (-1,73205355613964, -1,73176980526036)
+Czas wykonania: 00:00:00.7146122 (714ms)
+#####################
+80% najlepszego zostało osiągnięte w 0 epoce
+90% najlepszego zostało osiągnięte w 0 epoce
+95% najlepszego zostało osiągnięte w 0 epoce
+Liczba wykonań programu: 10
+--------------------------------------------
+
+Typ algorytmu: Default
+Wybór rodzica metodą: Selekcja metodą ruletka rankingowa
+Prawdopodobieństwo mutacji: 0,1
+Liczba pokoleń: 1000
+Wywołano: niedziela, 31 marca 2019 14:18:47
+Mediana z najlepszych: -1,731564544
+Średnia z najlepszych: -1,7317084771
+Odchylenie standardowe najlepszych wyników: 0,000220536969530003
+Przedziały ufności: (-1,73184516732987, -1,73157178687013)
+Czas wykonania: 00:00:00.7195197 (719ms)
+#####################
+80% najlepszego zostało osiągnięte w 0 epoce
+90% najlepszego zostało osiągnięte w 0 epoce
+95% najlepszego zostało osiągnięte w 0 epoce
+Liczba wykonań programu: 10
+--------------------------------------------
+

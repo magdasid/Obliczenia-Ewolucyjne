@@ -125,7 +125,7 @@ namespace Zadanie5
 
         public override string ToString()
         {
-            return "Selekcja metodą ruletka1";
+            return "Selekcja metodą ruletka wartościowa";
         }
     }
 
@@ -178,7 +178,7 @@ namespace Zadanie5
 
         public override string ToString()
         {
-            return "Selekcja metodą ruletka2";
+            return "Selekcja metodą ruletka rankingowa";
         }
     }
 
@@ -299,7 +299,7 @@ namespace Zadanie5
             return newPop;
         }
 
-        public double[] FindBest()
+        public (double fitnessValue, double phenotype) FindBest()
         {
             double bestResult = 0;
             double x = 0;
@@ -319,9 +319,7 @@ namespace Zadanie5
                 }
             }
 
-            result[0] = bestResult;
-            result[1] = x;
-            return result;
+            return (bestResult, x);
         }
     }
 
@@ -402,18 +400,18 @@ namespace Zadanie5
                 currentPopulation = generation.CreateNewPopulation();
 
                 var best = generation.FindBest();
-                CheckPercentage(best[1], j);
+                CheckPercentage(best.phenotype, j);
 
                 if (heaven.Count != 0)
                 {
-                    if (best[0] > generation.Fitness(heaven[0]))
+                    if (best.fitnessValue > generation.Fitness(heaven[0]))
                     {
-                        heaven[0] = best[1];
+                        heaven[0] = best.fitnessValue;
                     }
                 }
                 else
                 {
-                    heaven.Add(best[1]);
+                    heaven.Add(best.fitnessValue);
                 }
             }
         }
@@ -463,6 +461,7 @@ namespace Zadanie5
                 .AppendLine($"Mediana z najlepszych: {CountMedian(ArrayOfBestResults)}")
                 .AppendLine($"Średnia z najlepszych: {CountAverage(ArrayOfBestResults)}")
                 .AppendLine($"Odchylenie standardowe najlepszych wyników: {CountStandardDeviation(ArrayOfBestResults)}")
+                .AppendLine($"Przedziały ufności: {FindConfidenceInterval(ArrayOfBestResults)}")
                 .AppendLine($"Czas wykonania: {stopwatch.Elapsed} ({stopwatch.ElapsedMilliseconds}ms)")
                 .AppendLine("#####################")
                 .AppendLine($"80% najlepszego zostało osiągnięte w {AlgorithmToExecute.GenerationWhere80PercetangeBestAchieved} epoce")

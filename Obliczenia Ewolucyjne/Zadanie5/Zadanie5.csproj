@@ -5,4 +5,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="2019-03-31 niedziela" />
+  </ItemGroup>
 </Project>
