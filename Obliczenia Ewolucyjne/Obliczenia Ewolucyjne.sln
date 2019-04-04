@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Obliczenia Ewolucyjne", "Obliczenia Ewolucyjne\Obliczenia Ewolucyjne.csproj", "{CEB3F564-7D7A-48DF-B6E1-FED4370AA9D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Obliczenia Ewolucyjne", "Obliczenia Ewolucyjne\Obliczenia Ewolucyjne.csproj", "{CEB3F564-7D7A-48DF-B6E1-FED4370AA9D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zadanie3", "Zadanie3\Zadanie3.csproj", "{88FE9BCC-4A25-4103-82C6-C54DEDB75E92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zadanie3", "Zadanie3\Zadanie3.csproj", "{88FE9BCC-4A25-4103-82C6-C54DEDB75E92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zadanie4", "Zadanie4\Zadanie4.csproj", "{7C023346-FC03-4E7B-A3F3-9F3F9B79B508}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zadanie4", "Zadanie4\Zadanie4.csproj", "{7C023346-FC03-4E7B-A3F3-9F3F9B79B508}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zadanie5", "Zadanie5\Zadanie5.csproj", "{2B8D2CEA-84EA-4313-B13D-23F747077A7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zadanie5", "Zadanie5\Zadanie5.csproj", "{2B8D2CEA-84EA-4313-B13D-23F747077A7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zadanie6", "Zadanie6\Zadanie6.csproj", "{45AD472B-8377-4DC7-B246-174F3D281770}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{2B8D2CEA-84EA-4313-B13D-23F747077A7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B8D2CEA-84EA-4313-B13D-23F747077A7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B8D2CEA-84EA-4313-B13D-23F747077A7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45AD472B-8377-4DC7-B246-174F3D281770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45AD472B-8377-4DC7-B246-174F3D281770}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45AD472B-8377-4DC7-B246-174F3D281770}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45AD472B-8377-4DC7-B246-174F3D281770}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
