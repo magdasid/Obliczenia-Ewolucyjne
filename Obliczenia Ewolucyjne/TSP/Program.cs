@@ -88,9 +88,9 @@ namespace TSP
                 if (i < tourList.Length - 1)
                 {
                     firstCityData = lines[tourList[i] - 1].Split(' ');
-                    Console.WriteLine("l;ol" + (tourList[i] - 1));
+                    //Console.WriteLine("l;ol" + (tourList[i] - 1));
                     secondCityData = lines[tourList[i + 1] - 1].Split(' ');
-                    Console.WriteLine("lol" + (tourList[i+1] - 1));
+                    //Console.WriteLine("lol" + (tourList[i+1] - 1));
                 } else
                 {
                     firstCityData = lines[tourList[i] - 1].Split(' ');
@@ -98,19 +98,19 @@ namespace TSP
                 }
 
                 double x1 = double.Parse(firstCityData[1], CultureInfo.InvariantCulture);
-                Console.WriteLine(x1);
+                //Console.WriteLine(x1);
                 double y1 = double.Parse(firstCityData[2], CultureInfo.InvariantCulture);
-                Console.WriteLine(y1);
+                //Console.WriteLine(y1);
                 double x2 = double.Parse(secondCityData[1], CultureInfo.InvariantCulture);
-                Console.WriteLine(x2);
+                //Console.WriteLine(x2);
                 double y2 = double.Parse(secondCityData[2], CultureInfo.InvariantCulture);
-                Console.WriteLine(y2);
+                //Console.WriteLine(y2);
 
                 partSum += FindDistanceBetweenCities(x1, x2, y1, y2);
-                Console.WriteLine("partSum" + partSum);
+                //Console.WriteLine("partSum" + partSum);
             }
 
-            Console.WriteLine("sum:" + partSum);
+            //Console.WriteLine("sum:" + partSum);
 
             return partSum;
         }
@@ -176,6 +176,7 @@ namespace TSP
         {
             int size = parents[0].genotype.Length;
             int splitPoint = random.Next(1, size);
+            Console.WriteLine("split point: "+splitPoint );
             var mother = parents[0];
             var father = parents[1];
             
@@ -207,6 +208,15 @@ namespace TSP
             {
                 Individual[] parents = FindParents(startingPopulation);
                 Individual child = CreateChild(parents);
+
+                // sprawdzenie
+                for (int j = 0; j < child.genotype.Length; j++)
+                {
+                    Console.WriteLine("mother:" + parents[0].genotype[j]);
+                    Console.WriteLine("father:" + parents[1].genotype[j]);
+                    Console.WriteLine("child:" + child.genotype[j]);
+                }
+
                 newPopulation[i] = child;
             }
             return newPopulation;
@@ -218,14 +228,7 @@ namespace TSP
 
             Individual[] startingPopulation = GeneratePopulation(populationSize, 29);
 
-            Individual[] newPopulation = new Individual[populationSize];
-
-            Individual[] parents = FindParents(startingPopulation);
-
-            for (int i = 0; i < parents[0].tourList.Length; i++)
-            {
-                Console.WriteLine("parent"+ parents[0].tourList[i]);
-            }
+            CreateEpoch(startingPopulation);
 
             Console.WriteLine("Hello World!");
             Console.ReadKey();
