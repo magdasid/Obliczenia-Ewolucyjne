@@ -174,12 +174,27 @@ namespace TSP
 
         public static Individual CreateChild(Individual[] parents)
         {
-            int max = parents[0].genotype.Length;
-            int splitPoint = random.Next(1, max);
+            int size = parents[0].genotype.Length;
+            int splitPoint = random.Next(1, size);
             var mother = parents[0];
             var father = parents[1];
             
             Individual child = null;
+
+            int[] childGenotype = new int[size];
+
+            for (int i = 0; i < childGenotype.Length; i++)
+            {
+                if(i <= splitPoint)
+                {
+                    childGenotype[i] = mother.genotype[i];
+                } else
+                {
+                    childGenotype[i] = father.genotype[i];
+                }
+            }
+
+            child = new Individual(childGenotype);
 
             return child;
         }
