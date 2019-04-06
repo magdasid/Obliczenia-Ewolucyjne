@@ -200,9 +200,9 @@ namespace TSP
             return child;
         }
 
-        public static Individual[] CreateEpoch(Individual[] startingPopulation)
+        public static Individual[] CreateEpoch(Individual[] startingPopulation, int populationSize)
         {
-            Individual[] newPopulation = new Individual[20];
+            Individual[] newPopulation = new Individual[populationSize];
 
             for (int i = 0; i < startingPopulation.Length; i++)
             {
@@ -228,7 +228,7 @@ namespace TSP
             
             for (int i = 0; i < population.Length - 1; i++)
             {
-                if (FindTourDistance(population[i].tourList) < FindTourDistance(population[i].tourList))
+                if (FindTourDistance(population[i].tourList) < FindTourDistance(population[i+1].tourList))
                 {
                     bestResult = FindTourDistance(population[i].tourList);
                 }
@@ -246,14 +246,14 @@ namespace TSP
             /*
             CreateEpoch(startingPopulation); */
 
-            int populationSize = 20;
-            int numberOfEpoch = 1000;
+            int populationSize = 1000;
+            int numberOfEpoch = 10000;
 
             Individual[] startingPopulation = GeneratePopulation(populationSize, 29);
             
             for (int i = 1; i <= numberOfEpoch; i++)
             {
-                Individual[] newPopulation = CreateEpoch(startingPopulation);
+                Individual[] newPopulation = CreateEpoch(startingPopulation, populationSize);
 
                 startingPopulation = newPopulation;
                 
