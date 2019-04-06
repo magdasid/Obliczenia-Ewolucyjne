@@ -160,7 +160,7 @@ namespace TSP
             var phenotype2 = population[index2].tourList;
 
 
-            if (FindTourDistance(phenotype1) > FindTourDistance(phenotype2))
+            if (FindTourDistance(phenotype1) < FindTourDistance(phenotype2))
             {
                 parent = new Individual(genotype1);
             }
@@ -246,7 +246,7 @@ namespace TSP
             /*
             CreateEpoch(startingPopulation); */
 
-            int populationSize = 1000;
+            int populationSize = 500;
             int numberOfEpoch = 10000;
 
             Individual[] startingPopulation = GeneratePopulation(populationSize, 29);
