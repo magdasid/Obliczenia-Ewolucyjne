@@ -82,7 +82,7 @@ namespace TSP
             string[] firstCityData = null;
             string[] secondCityData = null;
 
-            Console.WriteLine("tourLength" + tourList.Length);
+            //Console.WriteLine("tourLength" + tourList.Length);
             for (int i = 0; i < tourList.Length; i++)
             {
                 if (i < tourList.Length - 1)
@@ -176,7 +176,7 @@ namespace TSP
         {
             int size = parents[0].genotype.Length;
             int splitPoint = random.Next(1, size);
-            Console.WriteLine("split point: "+splitPoint );
+            //Console.WriteLine("split point: "+splitPoint );
             var mother = parents[0];
             var father = parents[1];
             
@@ -209,26 +209,56 @@ namespace TSP
                 Individual[] parents = FindParents(startingPopulation);
                 Individual child = CreateChild(parents);
 
-                // sprawdzenie
+                /* sprawdzenie
                 for (int j = 0; j < child.genotype.Length; j++)
                 {
                     Console.WriteLine("mother:" + parents[0].genotype[j]);
                     Console.WriteLine("father:" + parents[1].genotype[j]);
                     Console.WriteLine("child:" + child.genotype[j]);
-                }
+                }*/
 
                 newPopulation[i] = child;
             }
             return newPopulation;
         }
 
+        public static double FindShortestPath(Individual[] population)
+        {
+            double? bestResult = null;
+            
+            for (int i = 0; i < population.Length - 1; i++)
+            {
+                if (FindTourDistance(population[i].tourList) < FindTourDistance(population[i].tourList))
+                {
+                    bestResult = FindTourDistance(population[i].tourList);
+                }
+                else
+                {
+                    bestResult = FindTourDistance(population[i+1].tourList);
+                }
+            }
+            
+            return bestResult.Value;
+        }
+
         static void Main(string[] args)
         {
+            /*
+            CreateEpoch(startingPopulation); */
+
             int populationSize = 20;
+            int numberOfEpoch = 1000;
 
             Individual[] startingPopulation = GeneratePopulation(populationSize, 29);
+            
+            for (int i = 1; i <= numberOfEpoch; i++)
+            {
+                Individual[] newPopulation = CreateEpoch(startingPopulation);
 
-            CreateEpoch(startingPopulation);
+                startingPopulation = newPopulation;
+                
+                Console.WriteLine("Epoka: " + i + ", Najlepszy wynik: " + FindShortestPath(newPopulation));
+            }
 
             Console.WriteLine("Hello World!");
             Console.ReadKey();
