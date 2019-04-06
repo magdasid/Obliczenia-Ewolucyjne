@@ -4,17 +4,54 @@ using System.IO;
 
 namespace TSP
 {
+    public class Cities
+    {
+        public City[] cities;
+
+        public Cities(string file)
+        {
+            cities = ReadCitiesFromFile(file);
+        }
+
+        public City[] ReadCitiesFromFile(string file)
+        {
+            string[] lines = File.ReadAllLines(file);
+            string[] cityData = null;
+            City[] cities = new City[lines.Length];
+            
+            for (int i = 0; i < lines.Length; i++)
+            {
+                cityData = lines[i].Split(' ');
+                cities[i] = new City(Int32.Parse(cityData[0]), double.Parse(cityData[1], CultureInfo.InvariantCulture), double.Parse(cityData[2], CultureInfo.InvariantCulture));
+            }
+
+            return cities;
+        }
+    }
+    public class City
+    {
+        public int numberOfcity;
+        public double x;
+        public double y;
+
+        public City(int number, double x1, double y1)
+        {
+            numberOfcity = number;
+            x = x1;
+            y = y1;
+        }
+    }
     public class Individual
     {
         public int[] genotype;
         public int[] tourList;
         public double tourLength;
-
-        public Individual(int[] g)
+       
+        public Individual(int[] g, Cities cities)
         {
             genotype = g;
             tourList = TourList(g, 29);
-            tourLength = FindTourDistance(TourList(g, 29));
+            tourLength = FindTourDistance(cities, TourList(g, 29));
         }
 
         public int[] TourList(int[] genotype, int numberOfCities)
@@ -67,42 +104,40 @@ namespace TSP
             return distance;
         }
 
-        public double FindTourDistance(int[] tourList)
+        public double FindTourDistance(Cities cities, int[] tourList)
         {
             double partSum = 0;
-            String file = @"C:\Users\Madzia\Desktop\distances.txt";
-            string[] lines = new string[tourList.Length];
+            //String file = @"C:\Users\Madzia\Desktop\distances.txt";
+            //string[] lines = new string[tourList.Length];
 
-            lines = File.ReadAllLines(file);
-            string[] firstCityData = null;
-            string[] secondCityData = null;
+            //lines = File.ReadAllLines(file);
+            double[] firstCityData = new double[2];
+            double[] secondCityData = new double[2];
 
             //Console.WriteLine("tourLength" + tourList.Length);
             for (int i = 0; i < tourList.Length; i++)
             {
                 if (i < tourList.Length - 1)
                 {
-                    firstCityData = lines[tourList[i] - 1].Split(' ');
+                    firstCityData[0] = cities.cities[tourList[i]-1].x;
+                    firstCityData[1] = cities.cities[tourList[i]-1].y;
+                    //firstCityData = lines[tourList[i] - 1].Split(' ');
                     //Console.WriteLine("l;ol" + (tourList[i] - 1));
-                    secondCityData = lines[tourList[i + 1] - 1].Split(' ');
+
+                    secondCityData[0] = cities.cities[tourList[i + 1]-1].x;
+                    secondCityData[1] = cities.cities[tourList[i + 1]-1].y;
                     //Console.WriteLine("lol" + (tourList[i+1] - 1));
                 }
                 else
                 {
-                    firstCityData = lines[tourList[i] - 1].Split(' ');
-                    secondCityData = lines[tourList[0] - 1].Split(' ');
+                    firstCityData[0] = cities.cities[tourList[i]-1].x;
+                    firstCityData[1] = cities.cities[tourList[i]-1].y;
+
+                    secondCityData[0] = cities.cities[tourList[0]-1].x;
+                    secondCityData[1] = cities.cities[tourList[0]-1].y;
                 }
 
-                double x1 = double.Parse(firstCityData[1], CultureInfo.InvariantCulture);
-                //Console.WriteLine(x1);
-                double y1 = double.Parse(firstCityData[2], CultureInfo.InvariantCulture);
-                //Console.WriteLine(y1);
-                double x2 = double.Parse(secondCityData[1], CultureInfo.InvariantCulture);
-                //Console.WriteLine(x2);
-                double y2 = double.Parse(secondCityData[2], CultureInfo.InvariantCulture);
-                //Console.WriteLine(y2);
-
-                partSum += FindDistanceBetweenCities(x1, x2, y1, y2);
+                partSum += FindDistanceBetweenCities(firstCityData[0], secondCityData[0], firstCityData[1], secondCityData[1]);
                 //Console.WriteLine("partSum" + partSum);
             }
 
@@ -115,62 +150,9 @@ namespace TSP
     class Program
     {
         public static Random random = new Random();
-
-        /*
-        // pomocnicza do obliczania długości całej trasy
-        public static double FindDistanceBetweenCities(double x1, double x2, double y1, double y2)
-        {
-            double distance = Math.Sqrt((Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2)));
-
-            return distance;
-        }
-
-        // obliczanie fitness value
-        public static double FindTourDistance(int[] tourList)
-        {
-            double partSum = 0;
-            String file = @"C:\Users\Madzia\Desktop\distances.txt";
-            string[] lines = new string[tourList.Length];
-
-            lines = File.ReadAllLines(file);
-            string[] firstCityData = null;
-            string[] secondCityData = null;
-
-            //Console.WriteLine("tourLength" + tourList.Length);
-            for (int i = 0; i < tourList.Length; i++)
-            {
-                if (i < tourList.Length - 1)
-                {
-                    firstCityData = lines[tourList[i] - 1].Split(' ');
-                    //Console.WriteLine("l;ol" + (tourList[i] - 1));
-                    secondCityData = lines[tourList[i + 1] - 1].Split(' ');
-                    //Console.WriteLine("lol" + (tourList[i+1] - 1));
-                } else
-                {
-                    firstCityData = lines[tourList[i] - 1].Split(' ');
-                    secondCityData = lines[tourList[0] - 1].Split(' ');
-                }
-
-                double x1 = double.Parse(firstCityData[1], CultureInfo.InvariantCulture);
-                //Console.WriteLine(x1);
-                double y1 = double.Parse(firstCityData[2], CultureInfo.InvariantCulture);
-                //Console.WriteLine(y1);
-                double x2 = double.Parse(secondCityData[1], CultureInfo.InvariantCulture);
-                //Console.WriteLine(x2);
-                double y2 = double.Parse(secondCityData[2], CultureInfo.InvariantCulture);
-                //Console.WriteLine(y2);
-
-                partSum += FindDistanceBetweenCities(x1, x2, y1, y2);
-                //Console.WriteLine("partSum" + partSum);
-            }
-
-            //Console.WriteLine("sum:" + partSum);
-
-            return partSum;
-        }
-        */
+        
         // generowanie populacji startowej
-        public static Individual[] GeneratePopulation(int populationSize, int numberOfCities)
+        public static Individual[] GeneratePopulation(int populationSize, int numberOfCities, Cities cities)
         {
             Individual[] population = new Individual[populationSize];
 
@@ -182,7 +164,7 @@ namespace TSP
                     genotype[j] = random.Next(1, numberOfCities - j + 1);
                 }
 
-                Individual individual = new Individual(genotype);
+                Individual individual = new Individual(genotype, cities);
 
                 population[i] = individual;
                 
@@ -190,17 +172,17 @@ namespace TSP
             return population;
         }
 
-        public static Individual[] FindParents(Individual[] population)
+        public static Individual[] FindParents(Individual[] population, Cities cities)
         {
             Individual[] parents = new Individual[2];
 
-            parents[0] = Roulette(population);
-            parents[1] = Roulette(population);
+            parents[0] = Roulette(population, cities);
+            parents[1] = Roulette(population, cities);
             
             return parents;
         }
 
-        public static Individual TournamentSelection(Individual[] population)
+        public static Individual TournamentSelection(Cities cities, Individual[] population)
         {
             Individual parent = null;
             int size = population.Length;
@@ -216,17 +198,17 @@ namespace TSP
 
             if (tourLength1 < tourLength2)
             {
-                parent = new Individual(genotype1);
+                parent = new Individual(genotype1, cities);
             }
             else
             {
-                parent = new Individual(genotype2);
+                parent = new Individual(genotype2, cities);
             }
 
             return parent;
         }
 
-        public static Individual Roulette(Individual[] population)
+        public static Individual Roulette(Individual[] population, Cities cities)
         {
             Individual parent = null;
             
@@ -252,7 +234,7 @@ namespace TSP
             while (partialSum < randomElement)
             {
                 partialSum += population.Length - j;
-                parent = new Individual(population[j].genotype);
+                parent = new Individual(population[j].genotype, cities);
                 j++;
             }
             
@@ -260,7 +242,7 @@ namespace TSP
         }
     
 
-        public static Individual CreateChild(Individual[] parents)
+        public static Individual CreateChild(Individual[] parents, Cities cities)
         {
             int size = parents[0].genotype.Length;
             int splitPoint = random.Next(1, size);
@@ -283,13 +265,13 @@ namespace TSP
                 }
             }
 
-            child = MutateChild(new Individual(childGenotype), 0.1);
+            child = MutateChild(new Individual(childGenotype, cities), 0.5, cities);
 
 
             return child;
         }
 
-        public static Individual MutateChild(Individual child, double probabilityOfMutation)
+        public static Individual MutateChild(Individual child, double probabilityOfMutation, Cities cities)
         {
             if (random.NextDouble() > probabilityOfMutation)
             {
@@ -303,19 +285,19 @@ namespace TSP
             
             child.genotype[splitPoint] = random.Next(1, childGenotypeLength - splitPoint + 1);
 
-            mutatedChild = new Individual(child.genotype);
+            mutatedChild = new Individual(child.genotype, cities);
 
             return mutatedChild;
         }
 
-        public static Individual[] CreateEpoch(Individual[] startingPopulation, int populationSize)
+        public static Individual[] CreateEpoch(Individual[] startingPopulation, int populationSize, Cities cities)
         {
             Individual[] newPopulation = new Individual[populationSize];
 
             for (int i = 0; i < startingPopulation.Length; i++)
             {
-                Individual[] parents = FindParents(startingPopulation);
-                Individual child = CreateChild(parents);
+                Individual[] parents = FindParents(startingPopulation, cities);
+                Individual child = CreateChild(parents, cities);
 
                 /* sprawdzenie
                 for (int j = 0; j < child.genotype.Length; j++)
@@ -351,15 +333,19 @@ namespace TSP
 
         static void Main(string[] args)
         {
-            int populationSize = 100;
-            int numberOfEpoch = 10000;
+            String file = @"C:\Users\Madzia\Desktop\distances.txt";
+
+            Cities testCities = new Cities(file);
+            
+            int populationSize = 1000;
+            int numberOfEpoch = 1000;
             double[] bestResults = new double[numberOfEpoch];
 
-            Individual[] startingPopulation = GeneratePopulation(populationSize, 29);
+            Individual[] startingPopulation = GeneratePopulation(populationSize, 29, testCities);
             
             for (int i = 1; i <= numberOfEpoch; i++)
             {
-                Individual[] newPopulation = CreateEpoch(startingPopulation, populationSize);
+                Individual[] newPopulation = CreateEpoch(startingPopulation, populationSize, testCities);
 
                 startingPopulation = newPopulation;
 
@@ -381,7 +367,7 @@ namespace TSP
                     }
                 
             }
-
+            
            // Console.WriteLine("best" + bestResult);
 
             Console.WriteLine("Hello World!");
