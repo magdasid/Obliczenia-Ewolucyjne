@@ -198,6 +198,20 @@ namespace TSP
 
             return child;
         }
+
+        public static Individual[] CreateEpoch(Individual[] startingPopulation)
+        {
+            Individual[] newPopulation = new Individual[20];
+
+            for (int i = 0; i < startingPopulation.Length; i++)
+            {
+                Individual[] parents = FindParents(startingPopulation);
+                Individual child = CreateChild(parents);
+                newPopulation[i] = child;
+            }
+            return newPopulation;
+        }
+
         static void Main(string[] args)
         {
             int populationSize = 20;
