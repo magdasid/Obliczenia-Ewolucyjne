@@ -195,9 +195,29 @@ namespace TSP
                 }
             }
 
-            child = new Individual(childGenotype);
+            child = MutateChild(new Individual(childGenotype), 0.1);
+
 
             return child;
+        }
+
+        public static Individual MutateChild(Individual child, double probabilityOfMutation)
+        {
+            if (random.NextDouble() > probabilityOfMutation)
+            {
+                return child;
+            }
+
+            Individual mutatedChild = null;
+
+            int childGenotypeLength = child.genotype.Length;
+            int splitPoint = random.Next(0, childGenotypeLength);
+            
+            child.genotype[splitPoint] = random.Next(1, childGenotypeLength - splitPoint + 1);
+
+            mutatedChild = new Individual(child.genotype);
+
+            return mutatedChild;
         }
 
         public static Individual[] CreateEpoch(Individual[] startingPopulation, int populationSize)
@@ -246,7 +266,7 @@ namespace TSP
             /*
             CreateEpoch(startingPopulation); */
 
-            int populationSize = 500;
+            int populationSize = 1500;
             int numberOfEpoch = 10000;
 
             Individual[] startingPopulation = GeneratePopulation(populationSize, 29);
