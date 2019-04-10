@@ -46,14 +46,40 @@ namespace TSP
         public int[] genotype;
         public int[] tourList;
         public double tourLength;
-       
+        public int[] adjacencyList;
+        
         public Individual(int[] g, Cities cities)
         {
             genotype = g;
-            tourList = TourList(g, 29);
-            tourLength = FindTourDistance(cities, TourList(g, 29));
+            tourList = TourList(g, g.Length);
+            adjacencyList = AdjacencyList(tourList);
+            //tourLength = FindTourDistance(cities, TourList(g, 29));
+
         }
 
+        public int[] AdjacencyList(int[] tourList)
+        {
+            int[] adjacencyList = new int[tourList.Length];
+
+            for (int i = 0; i < adjacencyList.Length; i++)
+            {
+                int index = Array.IndexOf(tourList, i+1);
+
+                if(index < adjacencyList.Length-1)
+                {
+                    adjacencyList[i] = tourList[index + 1];
+                } else
+                {
+                    adjacencyList[i] = tourList[0];
+                }
+            }
+
+            for (int i = 0; i < adjacencyList.Length; i++)
+            {
+                Console.WriteLine("adj" + adjacencyList[i]);
+            }  
+            return adjacencyList;
+        }
         public int[] TourList(int[] genotype, int numberOfCities)
         {
             int[] freeList = new int[numberOfCities];
@@ -176,8 +202,8 @@ namespace TSP
         {
             Individual[] parents = new Individual[2];
 
-            parents[0] = Roulette(population, cities);
-            parents[1] = Roulette(population, cities);
+            parents[0] = TournamentSelection(cities, population);
+            parents[1] = TournamentSelection(cities, population);
             
             return parents;
         }
@@ -271,6 +297,206 @@ namespace TSP
             return child;
         }
 
+        public static Individual PMX(Individual[] parents)
+        {
+            for (int i = 0; i < parents[0].tourList.Length; i++)
+            {
+                Console.WriteLine("parent 1 tour: " + parents[0].tourList[i]);
+            }
+            for (int i = 0; i < parents[0].tourList.Length; i++)
+            {
+                Console.WriteLine("parent 2 tour: " + parents[1].tourList[i]);
+            }
+
+            int size = parents[0].tourList.Length;
+            Console.WriteLine("size: "+size);
+            int splitPoint1 = random.Next(1, size);
+            Console.WriteLine("splitPoint 1: " + splitPoint1);
+            int splitPoint2 = random.Next(splitPoint1+1, size);
+            Console.WriteLine("splitPoint 2: " + splitPoint2);
+
+            Individual child = null;
+
+            int[] childTourList = new int[size];
+            int[] tab = new int[size];
+
+            for (int i = 0; i < childTourList.Length; i++)
+            {
+                if (i < splitPoint1)
+                {
+                    tab[i] = -1;
+                    childTourList[i] = -1;
+                }
+                else if (i >= splitPoint1 && i < splitPoint2)
+                {
+                    tab[i] = parents[0].tourList[i];
+                    childTourList[i] = parents[0].tourList[i];
+                }
+            }
+            
+            for (int i = 0; i < childTourList.Length; i++)
+            {
+                if (i < splitPoint1 || i >= splitPoint2)
+                {
+                    if (Array.IndexOf(tab, parents[1].tourList[i]) == -1)
+                    {
+                        childTourList[i] = parents[1].tourList[i];
+                        tab[i] = parents[1].tourList[i];
+                    }
+                    else
+                    {
+                        int element = parents[1].tourList[i];
+                        int elementIndex = Array.IndexOf(parents[0].tourList, element);
+                        int val = parents[1].tourList[elementIndex];
+                        while (Array.IndexOf(childTourList, val) != -1)
+                        {
+                            element = val;
+                            elementIndex = Array.IndexOf(parents[0].tourList, element);
+                            val = parents[1].tourList[elementIndex];
+                        }
+                        childTourList[i] = val;
+                        //childTourList[i] = parents[1].tourList[Array.IndexOf(parents[0].tourList, parents[1].tourList[i])];
+     
+                    }
+                }
+            }
+
+            for (int i = 0; i < childTourList.Length; i++)
+            {
+                Console.WriteLine("childTour: " + childTourList[i]);
+            }
+            return child;
+        }
+
+        public static Individual OX(Individual[] parents)
+        {
+            int size = parents[0].tourList.Length;
+            Console.WriteLine("size: " + size);
+            int splitPoint1 = random.Next(1, size);
+            //int splitPoint1 = 1;
+            Console.WriteLine("splitPoint 1: " + splitPoint1);
+            int splitPoint2 = random.Next(splitPoint1 + 1, size);
+            //int splitPoint2 = 3;
+            Console.WriteLine("splitPoint 2: " + splitPoint2);
+
+            Individual child = null;
+
+            int[] childTourList = new int[size];
+            int[] tab = new int[size];
+
+            // wyjmujemy środek z 1 rodzica pomiędzy wylosowanymi punktami
+            for (int i = 0; i < childTourList.Length; i++)
+            {
+                if (i < splitPoint1)
+                {
+                    tab[i] = -1;
+                    childTourList[i] = -1;
+                }
+                else if (i >= splitPoint1 && i < splitPoint2)
+                {
+                    tab[i] = parents[0].tourList[i];
+                    childTourList[i] = parents[0].tourList[i];
+                }
+            }
+
+            int index = splitPoint2;
+            // uzupełniamy ogon 
+            for (   int i = splitPoint2; i < childTourList.Length; i++)
+            {
+                Console.WriteLine("index" + index);
+                
+                int element = parents[1].tourList[index];
+              
+                while(Array.IndexOf(tab, element) != -1)
+                {
+                    Console.WriteLine("el przed"+element);
+                    if (index == size - 1)
+                    {
+                        index = 0;
+                    }
+                    else
+                    {
+                        index++;
+                    }
+                    element = parents[1].tourList[index];
+                    Console.WriteLine("el po" + element);
+
+                }
+                childTourList[i] = element;
+                tab[i] = element;
+            }
+            
+            //uzupełniam początek listy
+            for (int i = 0; i < splitPoint1; i++)
+            {
+                int element = parents[1].tourList[index];
+
+                while (Array.IndexOf(tab, element) != -1)
+                {
+                    Console.WriteLine("el przed" + element);
+                    if (index == size - 1)
+                    {
+                        index = 0;
+                    }
+                    else
+                    {
+                        index++;
+                    }
+                    element = parents[1].tourList[index];
+
+                }
+                childTourList[i] = element;
+                tab[i] = element;
+            }
+            
+            // tylko do wyświetlania
+            for (int i = 0; i < childTourList.Length; i++)
+            {
+                Console.WriteLine("childTour: " + childTourList[i]);
+            }
+
+            return child;
+
+        }
+        
+        public static Individual CX(int[] parent, int[] parent2)
+        {
+            int size = parent.Length;
+            Individual child = null;
+
+            int[] childTourList = new int[size];
+            int index = 0;
+            int element = parent[index];
+
+            Console.WriteLine("element"+element);
+
+            // wprowadzamy to co możemy z 1 rodzica, dopóki nie zaczną się powtarzać miasta
+            while (Array.IndexOf(childTourList, element) == -1)
+            {
+                childTourList[index] = element;
+                index = Array.IndexOf(parent, parent2[index]);
+                
+                element = parent[index];
+            }
+
+            // dopisujemy resztę z rodzica nr 2
+            for (int i = 0; i < childTourList.Length; i++)
+            {
+                if(childTourList[i] == 0)
+                {
+                    childTourList[i] = parent2[i];
+                }
+            }
+
+            for (int i = 0; i < childTourList.Length; i++)
+            {
+                Console.WriteLine("childTour: " + childTourList[i]);
+            }
+            return child;
+
+        }
+
+
         public static Individual MutateChild(Individual child, double probabilityOfMutation, Cities cities)
         {
             if (random.NextDouble() > probabilityOfMutation)
@@ -333,17 +559,36 @@ namespace TSP
 
         static void Main(string[] args)
         {
-            String file = @"C:\Users\Madzia\Desktop\distances.txt";
+            
+            String file = @"distances.txt";
 
             Cities testCities = new Cities(file);
+
+            int[] genotype = new int[9] { 4, 1, 1, 5, 4, 3, 3, 1, 1 };
+            int[] genotype2 = new int[9] { 1,1,2,1,4,1,3,1,1 };
+
+            //Individual parent1 = new Individual(genotype, testCities);
+            Individual parent2 = new Individual(genotype2, testCities);
+
+            //Individual[] parents = new Individual[2] { parent1, parent2 };
+
+           /*
+            //OX(parents);
             
+            
+            int[] par1 = new int[8] { 1, 2, 3, 4, 5, 6, 7, 8};
+            int[] par2 = new int[8] { 8, 5, 2, 1, 3, 6, 4, 7 };
+
+            CX(par1, par2); 
+            */
+            /*
             int populationSize = 1000;
             int numberOfEpoch = 1000;
             double[] bestResults = new double[numberOfEpoch];
 
             Individual[] startingPopulation = GeneratePopulation(populationSize, 29, testCities);
             
-            for (int i = 1; i <= numberOfEpoch; i++)
+            for (int i = 1; i < numberOfEpoch; i++)
             {
                 Individual[] newPopulation = CreateEpoch(startingPopulation, populationSize, testCities);
 
@@ -355,7 +600,9 @@ namespace TSP
 
             double? bestResult = null;
 
-            for (int i = 0; i < bestResults.Length; i++)
+            Console.WriteLine("len"+bestResults.Length);
+
+            for (int i = 0; i < bestResults.Length - 1; i++)
             {
                 if (bestResults[i] < bestResults[i+1])
                     {
@@ -367,10 +614,9 @@ namespace TSP
                     }
                 
             }
-            
-           // Console.WriteLine("best" + bestResult);
 
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("best" + bestResult);
+            */
             Console.ReadKey();
         }
     }
