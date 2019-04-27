@@ -4,6 +4,14 @@ using System.IO;
 
 namespace TSP
 {
+    public static class Extensions
+    {
+        public static bool Contains(this int[] array, int value)
+        {
+            return Array.IndexOf(array, value) != -1;
+        }
+    }
+
     public class Cities
     {
         public City[] cities;
@@ -80,6 +88,7 @@ namespace TSP
             }  
             return adjacencyList;
         }
+
         public int[] TourList(int[] genotype, int numberOfCities)
         {
             int[] freeList = new int[numberOfCities];
@@ -496,7 +505,174 @@ namespace TSP
 
         }
 
+        public static Individual SCC(int[] parent, int[] parent2)
+        {
+            Individual child = null;
+            int size = parent.Length;
+            int[] childTourList = new int[size];
+            bool[] used = new bool[size + 1];
 
+            int index = 0;
+            int element = parent[index];
+            bool takeFromFirstParent = true;
+            int numberOfChunks = 2;
+
+            // 1 Krok
+            used[element] = true;
+            used[index + 1] = true;
+            childTourList[index] = element;
+            index = element - 1;
+            element = parent[index];
+            numberOfChunks--;
+
+            for (int i = 1; i < childTourList.Length; i++)
+            {
+                if (numberOfChunks <= 0)
+                {
+                    numberOfChunks = 2; 
+                    takeFromFirstParent = !takeFromFirstParent;
+                }
+
+                if (takeFromFirstParent)
+                {
+                    if (i == childTourList.Length - 1) 
+                    {
+                        for (int j = 1; j <= size; j++)
+                        {
+                            if (!childTourList.Contains(j))
+                            {
+                                element = j;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        while (used[element] || childTourList.Contains(element))
+                        {
+                            element = random.Next(1, size + 1);
+                        }
+                    }
+
+                    childTourList[index] = element;
+                    used[element] = true;
+                    index = element - 1;
+                    element = parent2[index];
+                }
+                else
+                {
+                    if (i == childTourList.Length - 1)
+                    {
+                        for (int j = 1; j <= size; j++)
+                        {
+                            if (!childTourList.Contains(j))
+                            {
+                                element = j;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        while (used[element] || childTourList.Contains(element)) 
+                        {
+                            element = random.Next(1, size + 1); 
+                        }
+                    }
+
+                    childTourList[index] = element; 
+                    used[element] = true; 
+                    index = element - 1; 
+                    element = parent[index]; 
+                }
+
+                numberOfChunks--;
+            }
+
+            Console.WriteLine(string.Join(' ', used)); // wyświetli cała tablice w 1 linii  
+            Console.WriteLine(string.Join(' ', childTourList)); // wyświetli cała tablice w 1 linii  
+            return child;
+        }
+
+        public static Individual AEC(int[] parent, int[] parent2)
+        {
+            Individual child = null;
+            int size = parent.Length;
+            int[] childTourList = new int[size];
+            bool[] used = new bool[size + 1];
+
+            int index = 0;
+            int element = parent[index]; 
+
+            // 1 Krok
+            used[element] = true; 
+            used[index + 1] = true; 
+            childTourList[index] = element; 
+            index = element - 1; 
+            element = parent2[index]; 
+
+            for (int i = 1; i < childTourList.Length; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    if (i == childTourList.Length - 1) // ostatni krok
+                    {
+                        for (int j = 1; j <= size; j++)
+                        {
+                            if (!childTourList.Contains(j))
+                            {
+                                element = j;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        while (used[element] || childTourList.Contains(element))
+                        {
+                            element = random.Next(1, size + 1);
+                        }
+                    }
+
+                    childTourList[index] = element;
+                    used[element] = true;
+                    index = element - 1;
+                    element = parent2[index];
+                }
+                else
+                {
+                    if (i == childTourList.Length - 1) // ostatni krok
+                    {
+                        for (int j = 1; j <= size; j++)
+                        {
+                            if (!childTourList.Contains(j))
+                            {
+                                element = j;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        while (used[element] || childTourList.Contains(element)) 
+                        {
+                            element = random.Next(1, size + 1);
+                        }
+                    }
+
+                    childTourList[index] = element;
+                    used[element] = true; 
+                    index = element - 1; 
+                    element = parent[index];
+                }
+            }
+
+
+            Console.WriteLine(string.Join(' ', used)); // wyświetli cała tablice w 1 linii  
+            Console.WriteLine(string.Join(' ', childTourList)); // wyświetli cała tablice w 1 linii  
+            return child;
+        }
+        
         public static Individual MutateChild(Individual child, double probabilityOfMutation, Cities cities)
         {
             if (random.NextDouble() > probabilityOfMutation)
@@ -559,64 +735,12 @@ namespace TSP
 
         static void Main(string[] args)
         {
-            
-            String file = @"distances.txt";
+            int[] par1 = new int[9] { 2, 7, 8, 1, 3, 5, 9, 4, 6 };
+            int[] par2 = new int[9] { 7, 1, 6, 2, 9, 4, 8, 5, 3 };
 
-            Cities testCities = new Cities(file);
+            //AEC(par1, par2);
+            SCC(par1, par2);
 
-            int[] genotype = new int[9] { 4, 1, 1, 5, 4, 3, 3, 1, 1 };
-            int[] genotype2 = new int[9] { 1,1,2,1,4,1,3,1,1 };
-
-            //Individual parent1 = new Individual(genotype, testCities);
-            Individual parent2 = new Individual(genotype2, testCities);
-
-            //Individual[] parents = new Individual[2] { parent1, parent2 };
-
-           /*
-            //OX(parents);
-            
-            
-            int[] par1 = new int[8] { 1, 2, 3, 4, 5, 6, 7, 8};
-            int[] par2 = new int[8] { 8, 5, 2, 1, 3, 6, 4, 7 };
-
-            CX(par1, par2); 
-            */
-            /*
-            int populationSize = 1000;
-            int numberOfEpoch = 1000;
-            double[] bestResults = new double[numberOfEpoch];
-
-            Individual[] startingPopulation = GeneratePopulation(populationSize, 29, testCities);
-            
-            for (int i = 1; i < numberOfEpoch; i++)
-            {
-                Individual[] newPopulation = CreateEpoch(startingPopulation, populationSize, testCities);
-
-                startingPopulation = newPopulation;
-
-                bestResults[i] = FindShortestPath(newPopulation);
-                Console.WriteLine("Epoka: " + i + ", Najlepszy wynik: " + FindShortestPath(newPopulation));
-            }
-
-            double? bestResult = null;
-
-            Console.WriteLine("len"+bestResults.Length);
-
-            for (int i = 0; i < bestResults.Length - 1; i++)
-            {
-                if (bestResults[i] < bestResults[i+1])
-                    {
-                        bestResult = bestResults[i];
-                    }
-                    else
-                    {
-                        bestResult = bestResults[i+1];
-                    }
-                
-            }
-
-            Console.WriteLine("best" + bestResult);
-            */
             Console.ReadKey();
         }
     }
