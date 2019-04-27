@@ -80,7 +80,7 @@ namespace TSP
         {
             ordinalList = ordinalL;
             tourList = TourList(ordinalL, ordinalL.Length);
-            tourLength = FindTourDistance(cities, TourList(ordinalL, 29));
+            tourLength = FindTourDistance(cities, TourList(ordinalL, cities.cities.Length));
             representation = RepresentationType.Ordinal;
         }
 
@@ -108,12 +108,6 @@ namespace TSP
                     adjacencyList[i] = tourList[0];
                 }
             }
-
-            /*
-            for (int i = 0; i < adjacencyList.Length; i++)
-            {
-                Console.WriteLine("adj" + adjacencyList[i]);
-            }  */
             return adjacencyList;
         }
 
@@ -131,7 +125,6 @@ namespace TSP
             {
                 int element = genotype[i] - 1;
                 tourList[i] = FindCity(freeList, element);
-                Console.WriteLine("tourList" + tourList[i]);
             }
 
             return tourList;
@@ -182,12 +175,12 @@ namespace TSP
                 {
                     firstCityData[0] = cities.cities[tourList[i]-1].x;
                     firstCityData[1] = cities.cities[tourList[i]-1].y;
-                    //firstCityData = lines[tourList[i] - 1].Split(' ');
-                    //Console.WriteLine("l;ol" + (tourList[i] - 1));
+
+                    Console.WriteLine("lol" + (tourList[i] - 1));
 
                     secondCityData[0] = cities.cities[tourList[i + 1]-1].x;
                     secondCityData[1] = cities.cities[tourList[i + 1]-1].y;
-                    //Console.WriteLine("lol" + (tourList[i+1] - 1));
+                    Console.WriteLine("lol" + (tourList[i+1] - 1));
                 }
                 else
                 {
@@ -199,7 +192,7 @@ namespace TSP
                 }
 
                 partSum += FindDistanceBetweenCities(firstCityData[0], secondCityData[0], firstCityData[1], secondCityData[1]);
-                //Console.WriteLine("partSum" + partSum);
+                Console.WriteLine("partSum" + partSum);
             }
 
             //Console.WriteLine("sum:" + partSum);
@@ -255,6 +248,7 @@ namespace TSP
 
                 genotype = firstIndividual.tourList.Shuffle();
 
+                
                 for (int j = 0; j < genotype.Length; j++)
                 {
                     Console.WriteLine("gem" + genotype[j]);
@@ -297,7 +291,7 @@ namespace TSP
                     parent = new Individual(population[index1].ordinalList, cities);
                 } else
                 {
-                    parent = new Individual(population[index1].tourList, cities);
+                    parent = new Individual(cities, population[index1].tourList);
                 }
                 
             }
@@ -309,7 +303,7 @@ namespace TSP
                 }
                 else
                 {
-                    parent = new Individual(population[index2].tourList, cities);
+                    parent = new Individual(cities, population[index2].tourList);
                 }
             }
 
@@ -397,7 +391,7 @@ namespace TSP
             return mutatedChild;
         }
         
-        public static Individual PMX(Individual[] parents)
+        public static Individual PMX(Individual[] parents, Cities cities)
         {
             for (int i = 0; i < parents[0].tourList.Length; i++)
             {
@@ -465,17 +459,20 @@ namespace TSP
             {
                 Console.WriteLine("childTour: " + childTourList[i]);
             }
+
+            child = new Individual(cities, childTourList);
+
             return child;
         }
 
-        public static Individual OX(Individual[] parents)
+        public static Individual OX(Individual[] parents, Cities cities)
         {
-            int size = parents[0].tourList.Length;
+            int size = parents[0].tourList.Length; // 6
             Console.WriteLine("size: " + size);
-            int splitPoint1 = random.Next(1, size);
+            int splitPoint1 = random.Next(1, size); // od 1 do 5
             //int splitPoint1 = 1;
             Console.WriteLine("splitPoint 1: " + splitPoint1);
-            int splitPoint2 = random.Next(splitPoint1 + 1, size);
+            int splitPoint2 = random.Next(splitPoint1, size); // od 5 do 5
             //int splitPoint2 = 3;
             Console.WriteLine("splitPoint 2: " + splitPoint2);
 
@@ -555,13 +552,18 @@ namespace TSP
                 Console.WriteLine("childTour: " + childTourList[i]);
             }
 
+            child = new Individual(cities, childTourList);
+
             return child;
 
         }
         
-        public static Individual CX(int[] parent, int[] parent2)
+        public static Individual CX(Individual[] parents, Cities cities)
         {
-            int size = parent.Length;
+            int[] parent = parents[0].tourList;
+            int[] parent2 = parents[1].tourList;
+
+            int size = parents[0].tourList.Length;
             Individual child = null;
 
             int[] childTourList = new int[size];
@@ -592,14 +594,21 @@ namespace TSP
             {
                 Console.WriteLine("childTour: " + childTourList[i]);
             }
+
+            child = new Individual(cities, childTourList);
+
             return child;
 
         }
 
-        public static Individual SCC(int[] parent, int[] parent2)
+        public static Individual SCC(Individual[] parents, Cities cities)
         {
+            int[] parent = parents[0].adjacencyList;
+            int[] parent2 = parents[1].adjacencyList;
+
             Individual child = null;
             int size = parent.Length;
+            int[] childAdjacencyList = new int[size];
             int[] childTourList = new int[size];
             bool[] used = new bool[size + 1];
 
@@ -611,12 +620,12 @@ namespace TSP
             // 1 Krok
             used[element] = true;
             used[index + 1] = true;
-            childTourList[index] = element;
+            childAdjacencyList[index] = element;
             index = element - 1;
             element = parent[index];
             numberOfChunks--;
 
-            for (int i = 1; i < childTourList.Length; i++)
+            for (int i = 1; i < childAdjacencyList.Length; i++)
             {
                 if (numberOfChunks <= 0)
                 {
@@ -626,11 +635,11 @@ namespace TSP
 
                 if (takeFromFirstParent)
                 {
-                    if (i == childTourList.Length - 1) 
+                    if (i == childAdjacencyList.Length - 1) 
                     {
                         for (int j = 1; j <= size; j++)
                         {
-                            if (!childTourList.Contains(j))
+                            if (!childAdjacencyList.Contains(j))
                             {
                                 element = j;
                                 break;
@@ -639,24 +648,24 @@ namespace TSP
                     }
                     else
                     {
-                        while (used[element] || childTourList.Contains(element))
+                        while (used[element] || childAdjacencyList.Contains(element))
                         {
                             element = random.Next(1, size + 1);
                         }
                     }
 
-                    childTourList[index] = element;
+                    childAdjacencyList[index] = element;
                     used[element] = true;
                     index = element - 1;
                     element = parent2[index];
                 }
                 else
                 {
-                    if (i == childTourList.Length - 1)
+                    if (i == childAdjacencyList.Length - 1)
                     {
                         for (int j = 1; j <= size; j++)
                         {
-                            if (!childTourList.Contains(j))
+                            if (!childAdjacencyList.Contains(j))
                             {
                                 element = j;
                                 break;
@@ -665,13 +674,13 @@ namespace TSP
                     }
                     else
                     {
-                        while (used[element] || childTourList.Contains(element)) 
+                        while (used[element] || childAdjacencyList.Contains(element)) 
                         {
                             element = random.Next(1, size + 1); 
                         }
                     }
 
-                    childTourList[index] = element; 
+                    childAdjacencyList[index] = element; 
                     used[element] = true; 
                     index = element - 1; 
                     element = parent[index]; 
@@ -680,15 +689,24 @@ namespace TSP
                 numberOfChunks--;
             }
 
-            Console.WriteLine(string.Join(' ', used)); // wyświetli cała tablice w 1 linii  
-            Console.WriteLine(string.Join(' ', childTourList)); // wyświetli cała tablice w 1 linii  
+            Console.WriteLine(string.Join(' ', used)); 
+            Console.WriteLine(string.Join(' ', childAdjacencyList)); 
+            childTourList = ConvertFromAdjacencyList(childAdjacencyList);
+            Console.WriteLine(string.Join(' ', childTourList));
+
+            child = new Individual(cities, childTourList);
+
             return child;
         }
 
-        public static Individual AEC(int[] parent, int[] parent2)
+        public static Individual AEC(Individual[] parents, Cities cities)
         {
+            int[] parent = parents[0].adjacencyList;
+            int[] parent2 = parents[1].adjacencyList;
+
             Individual child = null;
             int size = parent.Length;
+            int[] childAdjacencyList = new int[size];
             int[] childTourList = new int[size];
             bool[] used = new bool[size + 1];
 
@@ -698,19 +716,19 @@ namespace TSP
             // 1 Krok
             used[element] = true; 
             used[index + 1] = true; 
-            childTourList[index] = element; 
+            childAdjacencyList[index] = element; 
             index = element - 1; 
             element = parent2[index]; 
 
-            for (int i = 1; i < childTourList.Length; i++)
+            for (int i = 1; i < childAdjacencyList.Length; i++)
             {
                 if (i % 2 == 0)
                 {
-                    if (i == childTourList.Length - 1) // ostatni krok
+                    if (i == childAdjacencyList.Length - 1) // ostatni krok
                     {
                         for (int j = 1; j <= size; j++)
                         {
-                            if (!childTourList.Contains(j))
+                            if (!childAdjacencyList.Contains(j))
                             {
                                 element = j;
                                 break;
@@ -719,24 +737,24 @@ namespace TSP
                     }
                     else
                     {
-                        while (used[element] || childTourList.Contains(element))
+                        while (used[element] || childAdjacencyList.Contains(element))
                         {
                             element = random.Next(1, size + 1);
                         }
                     }
 
-                    childTourList[index] = element;
+                    childAdjacencyList[index] = element;
                     used[element] = true;
                     index = element - 1;
                     element = parent2[index];
                 }
                 else
                 {
-                    if (i == childTourList.Length - 1) // ostatni krok
+                    if (i == childAdjacencyList.Length - 1) // ostatni krok
                     {
                         for (int j = 1; j <= size; j++)
                         {
-                            if (!childTourList.Contains(j))
+                            if (!childAdjacencyList.Contains(j))
                             {
                                 element = j;
                                 break;
@@ -745,13 +763,13 @@ namespace TSP
                     }
                     else
                     {
-                        while (used[element] || childTourList.Contains(element)) 
+                        while (used[element] || childAdjacencyList.Contains(element)) 
                         {
                             element = random.Next(1, size + 1);
                         }
                     }
 
-                    childTourList[index] = element;
+                    childAdjacencyList[index] = element;
                     used[element] = true; 
                     index = element - 1; 
                     element = parent[index];
@@ -760,10 +778,34 @@ namespace TSP
 
 
             Console.WriteLine(string.Join(' ', used)); // wyświetli cała tablice w 1 linii  
-            Console.WriteLine(string.Join(' ', childTourList)); // wyświetli cała tablice w 1 linii  
+            Console.WriteLine(string.Join(' ', childAdjacencyList)); // wyświetli cała tablice w 1 linii  
+
+            childTourList = ConvertFromAdjacencyList(childAdjacencyList);
+            Console.WriteLine(string.Join(' ', childTourList));
+
+            child = new Individual(cities, childTourList);
             return child;
         }
         
+        public static int[] ConvertFromAdjacencyList(int[] adjList)
+        {
+            int[] tourList = new int[adjList.Length];
+
+            int index = 0;
+
+            int i = 0;
+            while (i<tourList.Length)
+            {
+                int value = adjList[index];
+                tourList[i] = value;
+
+                index = value - 1;
+                i++;
+            }
+
+            Console.WriteLine(string.Join(' ', tourList));  
+            return tourList;
+        }
         
 
         public static Individual[] CreateEpoch(Individual[] startingPopulation, int populationSize, Cities cities)
@@ -773,8 +815,9 @@ namespace TSP
             for (int i = 0; i < startingPopulation.Length; i++)
             {
                 Individual[] parents = FindParents(startingPopulation, cities);
-                Individual child = ClassicalCrossover(parents, cities);
-
+                //Individual child = ClassicalCrossover(parents, cities);
+                Individual child = AEC(parents, cities);
+                
                 /* sprawdzenie
                 for (int j = 0; j < child.genotype.Length; j++)
                 {
@@ -809,28 +852,44 @@ namespace TSP
 
         static void Main(string[] args)
         {
-            /*
+            
             int[] par1 = new int[9] { 2, 7, 8, 1, 3, 5, 9, 4, 6 };
             int[] par2 = new int[9] { 7, 1, 6, 2, 9, 4, 8, 5, 3 };
 
             //AEC(par1, par2);
-            SCC(par1, par2);
-            */
-
+            //SCC(par1, par2);
+            
             int populationSize = 10;
             int numberOfEpoch = 10;
+            double[] bestResults = new double[numberOfEpoch];
+
             String file = @"distances.txt";
             Cities testCities = new Cities(file);
 
-            Individual[] startingPopulation = GeneratePopulationInOrdinalRepresentation(populationSize, 6, testCities);
+            Individual[] startingPopulation = GeneratePopulationInPathRepresentation(populationSize, 6, testCities);
 
-            for (int i = 1; i <= numberOfEpoch; i++)
+            for (int i = 0; i < numberOfEpoch; i++)
             {
                 Individual[] newPopulation = CreateEpoch(startingPopulation, populationSize, testCities);
 
                 startingPopulation = newPopulation;
+                bestResults[i] = FindShortestPath(newPopulation);
+                Console.WriteLine("Epoka: " + (i + 1) + ", Najlepszy wynik: " + FindShortestPath(newPopulation));
+            }
+            
+            double bestResult = bestResults[0];
+
+            for (int i = 0; i < bestResults.Length; i++)
+            {
+                if (bestResults[i] < bestResult)
+                {
+                    bestResult = bestResults[i];
+                }
+
             }
 
+            Console.WriteLine("best: " + bestResult);
+            
             Console.ReadKey();
         }
     }
