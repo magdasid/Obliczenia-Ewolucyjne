@@ -65,18 +65,23 @@ namespace TSP
             y = y1;
         }
     }
+
+    public enum RepresentationType { Path, Ordinal };
+
     public class Individual
     {
         public int[] ordinalList;
         public int[] tourList;
         public double tourLength;
         public int[] adjacencyList;
+        public RepresentationType representation;
         
         public Individual(int[] ordinalL, Cities cities)
         {
             ordinalList = ordinalL;
             tourList = TourList(ordinalL, ordinalL.Length);
             tourLength = FindTourDistance(cities, TourList(ordinalL, 29));
+            representation = RepresentationType.Ordinal;
         }
 
         public Individual(Cities cities, int[] tour)
@@ -84,6 +89,7 @@ namespace TSP
             tourList = tour;
             adjacencyList = AdjacencyList(tourList);
             tourLength = FindTourDistance(cities, tour);
+            representation = RepresentationType.Path;
         }
 
         public int[] AdjacencyList(int[] tourList)
@@ -130,7 +136,7 @@ namespace TSP
 
             return tourList;
         }
-
+        
         public int FindCity(int[] freeList, int element)
         {
             int value = -1;
@@ -201,11 +207,11 @@ namespace TSP
             return partSum;
         }
     }
-
+    
     class Program
     {
         public static Random random = new Random();
-        
+
         // generowanie populacji startowej w reprezentacji porządkowej
         public static Individual[] GeneratePopulationInOrdinalRepresentation(int populationSize, int numberOfCities, Cities cities)
         {
@@ -222,7 +228,7 @@ namespace TSP
                 Individual individual = new Individual(genotype, cities);
 
                 population[i] = individual;
-                
+
             }
             return population;
         }
@@ -274,24 +280,37 @@ namespace TSP
         public static Individual TournamentSelection(Cities cities, Individual[] population)
         {
             Individual parent = null;
+            RepresentationType type = population[1].representation;
+
             int size = population.Length;
             int index1 = random.Next(0, size);
             int index2 = random.Next(0, size);
-
-            var genotype1 = population[index1].ordinalList;
-            var genotype2 = population[index2].ordinalList;
-
+            
             var tourLength1 = population[index1].tourLength;
             var tourLength2 = population[index2].tourLength;
 
 
             if (tourLength1 < tourLength2)
             {
-                parent = new Individual(genotype1, cities);
+                if (type == RepresentationType.Ordinal)
+                {
+                    parent = new Individual(population[index1].ordinalList, cities);
+                } else
+                {
+                    parent = new Individual(population[index1].tourList, cities);
+                }
+                
             }
             else
             {
-                parent = new Individual(genotype2, cities);
+                if (type == RepresentationType.Ordinal)
+                {
+                    parent = new Individual(population[index2].ordinalList, cities);
+                }
+                else
+                {
+                    parent = new Individual(population[index2].tourList, cities);
+                }
             }
 
             return parent;
@@ -330,8 +349,8 @@ namespace TSP
             return parent;
         }
     
-
-        public static Individual CreateChild(Individual[] parents, Cities cities)
+        // klasyczne krzyżowanie dla reprezentacji porządkowej
+        public static Individual ClassicalCrossover(Individual[] parents, Cities cities)
         {
             int size = parents[0].ordinalList.Length;
             int splitPoint = random.Next(1, size);
@@ -355,11 +374,29 @@ namespace TSP
             }
 
             child = MutateChild(new Individual(childGenotype, cities), 0.5, cities);
-
-
             return child;
         }
 
+        // mutacja dla reprezentacji porządkowej
+        public static Individual MutateChild(Individual child, double probabilityOfMutation, Cities cities)
+        {
+            if (random.NextDouble() > probabilityOfMutation)
+            {
+                return child;
+            }
+
+            Individual mutatedChild = null;
+
+            int childGenotypeLength = child.ordinalList.Length;
+            int splitPoint = random.Next(0, childGenotypeLength);
+
+            child.ordinalList[splitPoint] = random.Next(1, childGenotypeLength - splitPoint + 1);
+
+            mutatedChild = new Individual(child.ordinalList, cities);
+
+            return mutatedChild;
+        }
+        
         public static Individual PMX(Individual[] parents)
         {
             for (int i = 0; i < parents[0].tourList.Length; i++)
@@ -727,24 +764,7 @@ namespace TSP
             return child;
         }
         
-        public static Individual MutateChild(Individual child, double probabilityOfMutation, Cities cities)
-        {
-            if (random.NextDouble() > probabilityOfMutation)
-            {
-                return child;
-            }
-
-            Individual mutatedChild = null;
-
-            int childGenotypeLength = child.ordinalList.Length;
-            int splitPoint = random.Next(0, childGenotypeLength);
-            
-            child.ordinalList[splitPoint] = random.Next(1, childGenotypeLength - splitPoint + 1);
-
-            mutatedChild = new Individual(child.ordinalList, cities);
-
-            return mutatedChild;
-        }
+        
 
         public static Individual[] CreateEpoch(Individual[] startingPopulation, int populationSize, Cities cities)
         {
@@ -753,7 +773,7 @@ namespace TSP
             for (int i = 0; i < startingPopulation.Length; i++)
             {
                 Individual[] parents = FindParents(startingPopulation, cities);
-                Individual child = CreateChild(parents, cities);
+                Individual child = ClassicalCrossover(parents, cities);
 
                 /* sprawdzenie
                 for (int j = 0; j < child.genotype.Length; j++)
@@ -796,14 +816,20 @@ namespace TSP
             //AEC(par1, par2);
             SCC(par1, par2);
             */
-            String file = @"distances.txt";
 
+            int populationSize = 10;
+            int numberOfEpoch = 10;
+            String file = @"distances.txt";
             Cities testCities = new Cities(file);
 
-            GeneratePopulationInPathRepresentation(2, 6, testCities);
+            Individual[] startingPopulation = GeneratePopulationInOrdinalRepresentation(populationSize, 6, testCities);
 
-            //GeneratePopulation(20, 6, testCities);
+            for (int i = 1; i <= numberOfEpoch; i++)
+            {
+                Individual[] newPopulation = CreateEpoch(startingPopulation, populationSize, testCities);
 
+                startingPopulation = newPopulation;
+            }
 
             Console.ReadKey();
         }
