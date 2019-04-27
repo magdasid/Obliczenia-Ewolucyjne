@@ -10,6 +10,22 @@ namespace TSP
         {
             return Array.IndexOf(array, value) != -1;
         }
+
+        public static int[] Shuffle(this int[] array)
+        {
+            var random = new Random();
+            int[] newArray = new int[array.Length];
+            Array.Copy(array, newArray, array.Length);
+
+            for (int i = array.Length; i > 1; i--)
+            {
+                int j = random.Next(i);
+                int tmp = newArray[j];
+                newArray[j] = newArray[i - 1];
+                newArray[i - 1] = tmp;
+            }
+            return newArray;
+        }
     }
 
     public class Cities
@@ -51,18 +67,23 @@ namespace TSP
     }
     public class Individual
     {
-        public int[] genotype;
+        public int[] ordinalList;
         public int[] tourList;
         public double tourLength;
         public int[] adjacencyList;
         
-        public Individual(int[] g, Cities cities)
+        public Individual(int[] ordinalL, Cities cities)
         {
-            genotype = g;
-            tourList = TourList(g, g.Length);
-            adjacencyList = AdjacencyList(tourList);
-            //tourLength = FindTourDistance(cities, TourList(g, 29));
+            ordinalList = ordinalL;
+            tourList = TourList(ordinalL, ordinalL.Length);
+            tourLength = FindTourDistance(cities, TourList(ordinalL, 29));
+        }
 
+        public Individual(Cities cities, int[] tour)
+        {
+            tourList = tour;
+            adjacencyList = AdjacencyList(tourList);
+            tourLength = FindTourDistance(cities, tour);
         }
 
         public int[] AdjacencyList(int[] tourList)
@@ -82,10 +103,11 @@ namespace TSP
                 }
             }
 
+            /*
             for (int i = 0; i < adjacencyList.Length; i++)
             {
                 Console.WriteLine("adj" + adjacencyList[i]);
-            }  
+            }  */
             return adjacencyList;
         }
 
@@ -103,6 +125,7 @@ namespace TSP
             {
                 int element = genotype[i] - 1;
                 tourList[i] = FindCity(freeList, element);
+                Console.WriteLine("tourList" + tourList[i]);
             }
 
             return tourList;
@@ -142,10 +165,7 @@ namespace TSP
         public double FindTourDistance(Cities cities, int[] tourList)
         {
             double partSum = 0;
-            //String file = @"C:\Users\Madzia\Desktop\distances.txt";
-            //string[] lines = new string[tourList.Length];
-
-            //lines = File.ReadAllLines(file);
+            
             double[] firstCityData = new double[2];
             double[] secondCityData = new double[2];
 
@@ -186,8 +206,8 @@ namespace TSP
     {
         public static Random random = new Random();
         
-        // generowanie populacji startowej
-        public static Individual[] GeneratePopulation(int populationSize, int numberOfCities, Cities cities)
+        // generowanie populacji startowej w reprezentacji porządkowej
+        public static Individual[] GeneratePopulationInOrdinalRepresentation(int populationSize, int numberOfCities, Cities cities)
         {
             Individual[] population = new Individual[populationSize];
 
@@ -203,6 +223,40 @@ namespace TSP
 
                 population[i] = individual;
                 
+            }
+            return population;
+        }
+
+        // generowanie populacji startowej w reprezentacji ścieżkowej
+        public static Individual[] GeneratePopulationInPathRepresentation(int populationSize, int numberOfCities, Cities cities)
+        {
+            Individual[] population = new Individual[populationSize];
+
+            Individual firstIndividual = null;
+            int[] firstGenotype = new int[numberOfCities];
+
+            for (int i = 0; i < numberOfCities; i++)
+            {
+                firstGenotype[i] = i+1;
+                
+                Console.WriteLine("gen" + firstGenotype[i]);
+            }
+            firstIndividual = new Individual(cities, firstGenotype);
+
+            for (int i = 0; i < populationSize; i++)
+            {
+                int[] genotype = new int[numberOfCities];
+
+                genotype = firstIndividual.tourList.Shuffle();
+
+                for (int j = 0; j < genotype.Length; j++)
+                {
+                    Console.WriteLine("gem" + genotype[j]);
+                }
+                
+                Individual individual = new Individual(cities, genotype);
+
+                population[i] = individual;
             }
             return population;
         }
@@ -224,8 +278,8 @@ namespace TSP
             int index1 = random.Next(0, size);
             int index2 = random.Next(0, size);
 
-            var genotype1 = population[index1].genotype;
-            var genotype2 = population[index2].genotype;
+            var genotype1 = population[index1].ordinalList;
+            var genotype2 = population[index2].ordinalList;
 
             var tourLength1 = population[index1].tourLength;
             var tourLength2 = population[index2].tourLength;
@@ -269,7 +323,7 @@ namespace TSP
             while (partialSum < randomElement)
             {
                 partialSum += population.Length - j;
-                parent = new Individual(population[j].genotype, cities);
+                parent = new Individual(population[j].ordinalList, cities);
                 j++;
             }
             
@@ -279,7 +333,7 @@ namespace TSP
 
         public static Individual CreateChild(Individual[] parents, Cities cities)
         {
-            int size = parents[0].genotype.Length;
+            int size = parents[0].ordinalList.Length;
             int splitPoint = random.Next(1, size);
             //Console.WriteLine("split point: "+splitPoint );
             var mother = parents[0];
@@ -293,10 +347,10 @@ namespace TSP
             {
                 if(i <= splitPoint)
                 {
-                    childGenotype[i] = mother.genotype[i];
+                    childGenotype[i] = mother.ordinalList[i];
                 } else
                 {
-                    childGenotype[i] = father.genotype[i];
+                    childGenotype[i] = father.ordinalList[i];
                 }
             }
 
@@ -682,12 +736,12 @@ namespace TSP
 
             Individual mutatedChild = null;
 
-            int childGenotypeLength = child.genotype.Length;
+            int childGenotypeLength = child.ordinalList.Length;
             int splitPoint = random.Next(0, childGenotypeLength);
             
-            child.genotype[splitPoint] = random.Next(1, childGenotypeLength - splitPoint + 1);
+            child.ordinalList[splitPoint] = random.Next(1, childGenotypeLength - splitPoint + 1);
 
-            mutatedChild = new Individual(child.genotype, cities);
+            mutatedChild = new Individual(child.ordinalList, cities);
 
             return mutatedChild;
         }
@@ -735,11 +789,21 @@ namespace TSP
 
         static void Main(string[] args)
         {
+            /*
             int[] par1 = new int[9] { 2, 7, 8, 1, 3, 5, 9, 4, 6 };
             int[] par2 = new int[9] { 7, 1, 6, 2, 9, 4, 8, 5, 3 };
 
             //AEC(par1, par2);
             SCC(par1, par2);
+            */
+            String file = @"distances.txt";
+
+            Cities testCities = new Cities(file);
+
+            GeneratePopulationInPathRepresentation(2, 6, testCities);
+
+            //GeneratePopulation(20, 6, testCities);
+
 
             Console.ReadKey();
         }
