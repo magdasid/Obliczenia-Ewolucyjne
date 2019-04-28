@@ -111,12 +111,9 @@ namespace TSP
                 {
                     firstCityData[0] = cities.cities[tourList[i] - 1].X;
                     firstCityData[1] = cities.cities[tourList[i] - 1].Y;
-
-                    //Console.WriteLine("lol" + (tourList[i] - 1));
-
+                    
                     secondCityData[0] = cities.cities[tourList[i + 1] - 1].X;
                     secondCityData[1] = cities.cities[tourList[i + 1] - 1].Y;
-                   // Console.WriteLine("lol" + (tourList[i + 1] - 1));
                 }
                 else
                 {

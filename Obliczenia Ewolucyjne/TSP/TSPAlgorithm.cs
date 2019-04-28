@@ -8,9 +8,9 @@ namespace TSP
         private static Random Random = new Random();
 
         private IParentSelection parentSelection;
-        private ICrossover crossoverOperator;
+        public ICrossover crossoverOperator;
         private IMutation methodOfMutation;
-        private int numberOfGenerations;
+        public int numberOfGenerations;
         private int populationSize;
         private Cities cities;
         private double[] bestResults;
@@ -65,6 +65,11 @@ namespace TSP
         public double GetBestResult()
         {
             return bestResults.Min();
+        }
+
+        public double[] GetBestResults()
+        {
+            return bestResults;
         }
 
         /// <summary>
