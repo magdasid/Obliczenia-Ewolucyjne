@@ -17,7 +17,7 @@ namespace TSP.Crossovers
             int index = 0;
             int element = parent[index];
 
-            Console.WriteLine("element" + element);
+            //Console.WriteLine("element" + element);
 
             // wprowadzamy to co możemy z 1 rodzica, dopóki nie zaczną się powtarzać miasta
             while (Array.IndexOf(childTourList, element) == -1)
@@ -39,7 +39,7 @@ namespace TSP.Crossovers
 
             for (int i = 0; i < childTourList.Length; i++)
             {
-                Console.WriteLine("childTour: " + childTourList[i]);
+                //Console.WriteLine("childTour: " + childTourList[i]);
             }
 
             child = new Individual(cities, childTourList);

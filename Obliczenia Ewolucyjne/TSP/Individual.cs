@@ -125,7 +125,7 @@ namespace TSP
                 }
 
                 partSum += FindDistanceBetweenCities(firstCityData[0], secondCityData[0], firstCityData[1], secondCityData[1]);
-                //Console.WriteLine("partSum" + partSum);
+                ////Console.WriteLine("partSum" + partSum);
             }
             
             return partSum;

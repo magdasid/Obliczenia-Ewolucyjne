@@ -35,7 +35,7 @@ namespace TSP.Crossovers
             {
                 if (numberOfChunks <= 0)
                 {
-                    numberOfChunks = 2;
+                    numberOfChunks = 2; // fuck
                     takeFromFirstParent = !takeFromFirstParent;
                 }
 
@@ -95,10 +95,10 @@ namespace TSP.Crossovers
                 numberOfChunks--;
             }
 
-            Console.WriteLine(string.Join(' ', used));
-            Console.WriteLine(string.Join(' ', childAdjacencyList));
+            ////Console.WriteLine(string.Join(' ', used));
+            ////Console.WriteLine(string.Join(' ', childAdjacencyList));
             childTourList = ConvertFromAdjacencyList(childAdjacencyList);
-            Console.WriteLine(string.Join(' ', childTourList));
+            ////Console.WriteLine(string.Join(' ', childTourList));
 
             child = new Individual(cities, childTourList);
 
@@ -121,7 +121,7 @@ namespace TSP.Crossovers
                 i++;
             }
 
-            Console.WriteLine(string.Join(' ', tourList));
+            //Console.WriteLine(string.Join(' ', tourList));
             return tourList;
         }
 

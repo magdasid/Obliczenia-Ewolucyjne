@@ -84,11 +84,11 @@ namespace TSP.Crossovers
                 }
             }
             
-            Console.WriteLine(string.Join(' ', used)); // wyświetli cała tablice w 1 linii  
-            Console.WriteLine(string.Join(' ', childAdjacencyList)); // wyświetli cała tablice w 1 linii  
+            //Console.WriteLine(string.Join(' ', used)); // wyświetli cała tablice w 1 linii  
+            //Console.WriteLine(string.Join(' ', childAdjacencyList)); // wyświetli cała tablice w 1 linii  
 
             childTourList = ConvertFromAdjacencyList(childAdjacencyList);
-            Console.WriteLine(string.Join(' ', childTourList));
+            //Console.WriteLine(string.Join(' ', childTourList));
 
             child = new Individual(cities, childTourList);
             return child;
@@ -110,7 +110,7 @@ namespace TSP.Crossovers
                 i++;
             }
 
-            Console.WriteLine(string.Join(' ', tourList));
+            //Console.WriteLine(string.Join(' ', tourList));
             return tourList;
         }
 
