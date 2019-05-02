@@ -10,14 +10,14 @@ namespace TSP
     {
         static void Main(string[] args)
         {             
-            int populationSize = 100;
-            int numberOfEpoch = 1000;
+            int populationSize = 1000;
+            int numberOfEpoch = 10000;
             int numberOfExecution = 1;
             double probabilityOfMutation = 0.1;
-            string file = @"Japan.txt";
+            string file = @"WesternSahara.txt";
             Cities testCities = new Cities(file);
             IParentSelection parentSelection = new TournamentSelection();
-            ICrossover crossover = new CX();
+            ICrossover crossover = new OX();
             IMutation mutation = new TranspositionMutation(probabilityOfMutation);
             string filename = DateTime.Now.ToString("yyyy-MM-dd HH;mm");
 
