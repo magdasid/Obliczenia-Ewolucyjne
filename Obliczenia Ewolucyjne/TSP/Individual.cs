@@ -31,9 +31,13 @@ namespace TSP
         public int[] AdjacencyList(int[] tourList)
         {
             int[] adjacencyList = new int[tourList.Length];
+            int[] mappingTourList = new int[tourList.Length + 1];
+            for (int i = 0; i < tourList.Length; i++)
+                mappingTourList[tourList[i]] = i;
+
             for (int i = 0; i < adjacencyList.Length; i++)
             {
-                int index = tourList.IndexOf(i + 1);
+                int index = mappingTourList[i + 1];
                 if (index < adjacencyList.Length - 1)
                     adjacencyList[i] = tourList[index + 1];
                 else
