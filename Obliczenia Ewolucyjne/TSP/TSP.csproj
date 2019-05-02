@@ -6,7 +6,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="WesternSahara.txt">
+    <None Remove="WesternSahara.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="WesternSahara.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Japan.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

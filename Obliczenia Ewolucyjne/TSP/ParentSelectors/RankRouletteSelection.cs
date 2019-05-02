@@ -5,7 +5,7 @@ namespace TSP.ParentSelectors
 {
     public class RankRouletteSelection : IParentSelection
     {
-        private static Random Random = new Random();
+        private static Random Random = RandomGenerator.GetInstance();
 
         public Individual FindParent(Individual[] population, Cities cities)
         {
@@ -22,12 +22,9 @@ namespace TSP.ParentSelectors
             });
 
             double partialSum = 0;
-
             int sum = (population.Length * (population.Length + 1)) / 2;
-
             double randomElement = Random.NextDouble() * sum;
             int j = 0;
-
             while (partialSum < randomElement)
             {
                 partialSum += population.Length - j;

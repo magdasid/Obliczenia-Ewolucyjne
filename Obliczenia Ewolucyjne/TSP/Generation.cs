@@ -5,7 +5,7 @@ namespace TSP
 {
     public class Generation
     {
-        private static Random Random = new Random();
+        private static Random Random = RandomGenerator.GetInstance();
 
         private Individual[] population;
         private Cities cities;
@@ -42,14 +42,9 @@ namespace TSP
         public double GetShortestPathFromGeneration()
         {
             double bestResult = population[0].tourLength;
-
             for (int i = 1; i < population.Length; i++)
-            {
                 if (population[i].tourLength < bestResult)
-                {
                     bestResult = population[i].tourLength;
-                }
-            }
 
             return bestResult;
         }
@@ -61,6 +56,5 @@ namespace TSP
                 parentSelection.FindParent(population, cities)
             };
         }
-
     }
 }

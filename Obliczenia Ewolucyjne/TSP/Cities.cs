@@ -11,8 +11,8 @@ namespace TSP
 
         public Cities(string file)
         {
-            cities = ReadCitiesFromFile(file);
             setName = Path.GetFileNameWithoutExtension(file);
+            cities = ReadCitiesFromFile(file);
         }
 
         private City[] ReadCitiesFromFile(string file)

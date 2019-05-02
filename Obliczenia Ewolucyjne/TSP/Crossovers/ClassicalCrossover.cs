@@ -5,7 +5,7 @@ namespace TSP.Crossovers
 {
     public class ClassicalCrossover : ICrossover, ICrossoverUsingOridinalRepresentation
     {
-        public static Random Random = new Random();
+        public static Random Random = RandomGenerator.GetInstance();
 
         public Individual Cross(Individual[] parents, Cities cities)
         {
@@ -20,23 +20,14 @@ namespace TSP.Crossovers
             for (int i = 0; i < childGenotype.Length; i++)
             {
                 if (i <= splitPoint)
-                {
                     childGenotype[i] = mother.ordinalList[i];
-                }
                 else
-                {
                     childGenotype[i] = father.ordinalList[i];
-                }
             }
 
-            Individual child = new Individual(childGenotype, cities);
+            return new Individual(childGenotype, cities);
+        }
 
-            return child;
-        }
-        
-        public override string ToString()
-        {
-            return "Classical crossover - Krzyżowanie klasyczne";
-        }
+        public override string ToString() => "Classical crossover - Krzyżowanie klasyczne";
     }
 }

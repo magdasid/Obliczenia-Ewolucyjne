@@ -16,7 +16,7 @@ namespace TSP
         {
             ordinalList = ordinalL;
             tourList = TourList(ordinalL, ordinalL.Length);
-            tourLength = FindTourDistance(cities, TourList(ordinalL, cities.cities.Length));
+            tourLength = FindTourDistance(cities, tourList);
             representation = RepresentationType.Ordinal;
         }
 
@@ -31,19 +31,13 @@ namespace TSP
         public int[] AdjacencyList(int[] tourList)
         {
             int[] adjacencyList = new int[tourList.Length];
-
             for (int i = 0; i < adjacencyList.Length; i++)
             {
-                int index = Array.IndexOf(tourList, i + 1);
-
+                int index = tourList.IndexOf(i + 1);
                 if (index < adjacencyList.Length - 1)
-                {
                     adjacencyList[i] = tourList[index + 1];
-                }
                 else
-                {
                     adjacencyList[i] = tourList[0];
-                }
             }
             return adjacencyList;
         }
@@ -54,16 +48,13 @@ namespace TSP
             int[] tourList = new int[numberOfCities];
 
             for (int i = 0; i < numberOfCities; i++)
-            {
                 freeList[i] = i + 1;
-            }
 
             for (int i = 0; i < genotype.Length; i++)
             {
                 int element = genotype[i] - 1;
                 tourList[i] = FindCity(freeList, element);
             }
-
             return tourList;
         }
 
@@ -83,51 +74,39 @@ namespace TSP
                         break;
                     }
                     else
-                    {
                         indexOfFreeElements++;
-                    }
                 }
             }
             return value;
         }
 
         public double FindDistanceBetweenCities(double x1, double x2, double y1, double y2)
-        {
-            double distance = Math.Sqrt((Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2)));
-
-            return distance;
-        }
+            => Math.Sqrt((Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2)));
 
         public double FindTourDistance(Cities cities, int[] tourList)
         {
             double partSum = 0;
-
             double[] firstCityData = new double[2];
             double[] secondCityData = new double[2];
-            
-            for (int i = 0; i < tourList.Length; i++)
-            {
-                if (i < tourList.Length - 1)
-                {
-                    firstCityData[0] = cities.cities[tourList[i] - 1].X;
-                    firstCityData[1] = cities.cities[tourList[i] - 1].Y;
-                    
-                    secondCityData[0] = cities.cities[tourList[i + 1] - 1].X;
-                    secondCityData[1] = cities.cities[tourList[i + 1] - 1].Y;
-                }
-                else
-                {
-                    firstCityData[0] = cities.cities[tourList[i] - 1].X;
-                    firstCityData[1] = cities.cities[tourList[i] - 1].Y;
 
-                    secondCityData[0] = cities.cities[tourList[0] - 1].X;
-                    secondCityData[1] = cities.cities[tourList[0] - 1].Y;
-                }
+            for (int i = 0; i < tourList.Length - 1; i++)
+            {
+                firstCityData[0] = cities.cities[tourList[i] - 1].X;
+                firstCityData[1] = cities.cities[tourList[i] - 1].Y;
+
+                secondCityData[0] = cities.cities[tourList[i + 1] - 1].X;
+                secondCityData[1] = cities.cities[tourList[i + 1] - 1].Y;
 
                 partSum += FindDistanceBetweenCities(firstCityData[0], secondCityData[0], firstCityData[1], secondCityData[1]);
-                //Console.WriteLine("partSum" + partSum);
             }
-            
+
+            firstCityData[0] = cities.cities[tourList[tourList.Length - 1] - 1].X;
+            firstCityData[1] = cities.cities[tourList[tourList.Length - 1] - 1].Y;
+
+            secondCityData[0] = cities.cities[tourList[0] - 1].X;
+            secondCityData[1] = cities.cities[tourList[0] - 1].Y;
+            partSum += FindDistanceBetweenCities(firstCityData[0], secondCityData[0], firstCityData[1], secondCityData[1]);
+
             return partSum;
         }
     }

@@ -5,15 +5,13 @@ namespace TSP.Crossovers
 {
     public class OX : ICrossover, ICrossoverUsingPathRepresentation
     {
-        private static Random Random = new Random();
+        private static Random Random = RandomGenerator.GetInstance();
 
         public Individual Cross(Individual[] parents, Cities cities)
         {
             int size = parents[0].tourList.Length; 
             int splitPoint1 = Random.Next(1, size);
-            int splitPoint2 = Random.Next(splitPoint1, size); 
-
-            Individual child = null;
+            int splitPoint2 = Random.Next(splitPoint1, size);
 
             int[] childTourList = new int[size];
             int[] tab = new int[size];
@@ -39,7 +37,7 @@ namespace TSP.Crossovers
             {
                 int element = parents[1].tourList[index];
 
-                while (Array.IndexOf(tab, element) != -1)
+                while (tab.IndexOf(element) != -1)
                 {
                     if (index == size - 1)
                     {
@@ -61,31 +59,22 @@ namespace TSP.Crossovers
             {
                 int element = parents[1].tourList[index];
 
-                while (Array.IndexOf(tab, element) != -1)
+                while (tab.IndexOf(element) != -1)
                 {
                     if (index == size - 1)
-                    {
                         index = 0;
-                    }
                     else
-                    {
                         index++;
-                    }
-                    element = parents[1].tourList[index];
 
+                    element = parents[1].tourList[index];
                 }
                 childTourList[i] = element;
                 tab[i] = element;
             }
             
-            child = new Individual(cities, childTourList);
-
-            return child;
+            return new Individual(cities, childTourList);
         }
 
-        public override string ToString()
-        {
-            return "Order Crossover - Krzyżowanie z porządkowaniem";
-        }
+        public override string ToString() => "Order Crossover - Krzyżowanie z porządkowaniem";
     }
 }
