@@ -50,5 +50,11 @@ namespace TSP
 
             return cities;
         }
+
+        private double FindDistanceBetweenCities(double x1, double x2, double y1, double y2)
+            => Math.Sqrt((Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2)));
+
+        public double GetDistanceBetweenCities(int city1, int city2)
+            => FindDistanceBetweenCities(cities[city1].X, cities[city2].X, cities[city1].Y, cities[city2].Y);
     }
 }
