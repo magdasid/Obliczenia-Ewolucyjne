@@ -18,7 +18,6 @@ namespace TSP.Mutation
             if (Random.NextDouble() > probabilityOfMutation)
                 return child;
 
-            Individual mutatedChild = null;
             int[] childTourList = child.tourList;
             int[] mutatedChildTourList = new int[childTourList.Length];
 
@@ -43,8 +42,7 @@ namespace TSP.Mutation
                 Array.Copy(childTourList, indexOfCity + 1, mutatedChildTourList, indexOfCity + 1, mutatedChildTourList.Length - indexOfCity - 1);
             }
 
-            mutatedChild = new Individual(cities, mutatedChildTourList);
-            return mutatedChild;
+            return new Individual(cities, mutatedChildTourList);
         }
         public override string ToString() => "Insertion Mutation - przesunięcie miasta";
     }
