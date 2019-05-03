@@ -31,7 +31,7 @@ namespace TSP.ParentSelectors
                 j++;
             }
 
-            return new Individual(population[j - 1].ordinalList, cities); ;
+            return new Individual(cities, population[j - 1].tourList); ;
         }
 
         public override string ToString()

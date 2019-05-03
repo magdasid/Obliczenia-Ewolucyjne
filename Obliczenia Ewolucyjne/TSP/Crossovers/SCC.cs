@@ -34,7 +34,7 @@ namespace TSP.Crossovers
             {
                 if (numberOfChunks <= 0)
                 {
-                    numberOfChunks = 2;
+                    numberOfChunks = 2; // fuck
                     takeFromFirstParent = !takeFromFirstParent;
                 }
 
@@ -95,7 +95,6 @@ namespace TSP.Crossovers
             }
 
             childTourList = ConvertFromAdjacencyList(childAdjacencyList);
-
             return new Individual(cities, childTourList); ;
         }
 
