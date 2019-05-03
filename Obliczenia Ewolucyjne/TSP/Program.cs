@@ -10,25 +10,27 @@ namespace TSP
     {
         static void Main(string[] args)
         {             
-            int populationSize = 1500;
+            int populationSize = 1000;
             int numberOfEpoch = 500;
-            int numberOfExecution = 10;
+            int numberOfExecution = 1;
             double probabilityOfMutation = 0.1;
             string file = @"WesternSahara.txt";
             Cities testCities = new Cities(file);
             IParentSelection parentSelection = new TournamentSelection();
-            ICrossover crossover = new PMX();
+            ICrossover crossover = new AEX();
             IMutation mutation = new TranspositionMutation(probabilityOfMutation);
             string filename = DateTime.Now.ToString("yyyy-MM-dd HH;mm");
-            
-            // Test 1 - PMX
+
+            //Test 1 - PMX
             TSPAlgorithm tsp = new TSPAlgorithm(numberOfEpoch, populationSize, testCities, parentSelection, mutation, crossover);
             AlgorithmExecutor AE = new AlgorithmExecutor(tsp, numberOfExecution);
-            AE.Start();
+            AE.Start(); 
             AE.SaveInformations(filename + ".txt");
-            AE.ExportStatisticsToCsv(filename + "_stats.csv");
+            //AE.ExportStatisticsToCsv(filename + "_stats.csv");
 
-            // Test 2 - CX
+
+
+            /* Test 2 - CX
             crossover = new CX();
             tsp = new TSPAlgorithm(numberOfEpoch, populationSize, testCities, parentSelection, mutation, crossover);
             AE = new AlgorithmExecutor(tsp, numberOfExecution);
@@ -66,9 +68,9 @@ namespace TSP
             tsp = new TSPAlgorithm(numberOfEpoch, populationSize, testCities, parentSelection, mutation, crossover);
             AE = new AlgorithmExecutor(tsp, numberOfExecution);
             AE.Start();
-            AE.SaveInformations(filename + ".txt");
-            AE.ExportStatisticsToCsv(filename + "_stats.csv");
-            
+            //AE.SaveInformations(filename + ".txt");
+            //AE.ExportStatisticsToCsv(filename + "_stats.csv");
+            */
             Console.ReadKey();
         }
     }
