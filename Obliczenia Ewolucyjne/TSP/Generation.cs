@@ -31,7 +31,6 @@ namespace TSP
                 Individual[] parents = FindParents();
                 Individual child = crossoverOperator.Cross(parents, cities);
                 Individual mutatedChild = methodOfMutation.Mutate(cities, child);
-
                 newPopulation[i] = mutatedChild;
             }
 

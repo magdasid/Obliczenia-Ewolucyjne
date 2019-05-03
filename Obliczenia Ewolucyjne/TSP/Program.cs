@@ -10,15 +10,15 @@ namespace TSP
     {
         static void Main(string[] args)
         {             
-            int populationSize = 1000;
-            int numberOfEpoch = 500;
+            int populationSize = 10;
+            int numberOfEpoch = 50;
             int numberOfExecution = 1;
             double probabilityOfMutation = 0.1;
             string file = @"WesternSahara.txt";
             Cities testCities = new Cities(file);
             IParentSelection parentSelection = new TournamentSelection();
-            ICrossover crossover = new AEX();
-            IMutation mutation = new TranspositionMutation(probabilityOfMutation);
+            ICrossover crossover = new PMX();
+            IMutation mutation = new InsertionMutation(probabilityOfMutation);
             string filename = DateTime.Now.ToString("yyyy-MM-dd HH;mm");
 
             //Test 1 - PMX
