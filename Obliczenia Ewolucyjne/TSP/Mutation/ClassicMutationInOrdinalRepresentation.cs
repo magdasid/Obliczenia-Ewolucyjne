@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using TSP.Interfaces;
 
 namespace TSP.Mutation
 {
     public class ClassicMutationInOrdinalRepresentation : IMutation
     {
-        private static Random Random = new Random();
+        private static Random Random = RandomGenerator.GetInstance();
         private double probabilityOfMutation;
 
         public ClassicMutationInOrdinalRepresentation(double probability)
@@ -18,9 +16,7 @@ namespace TSP.Mutation
         public Individual Mutate(Cities cities, Individual child)
         {
             if (Random.NextDouble() > probabilityOfMutation)
-            {
                 return child;
-            }
 
             int childGenotypeLength = child.ordinalList.Length;
             int splitPoint = Random.Next(0, childGenotypeLength);
@@ -29,10 +25,7 @@ namespace TSP.Mutation
 
             return new Individual(child.ordinalList, cities);
         }
-        public override string ToString()
-        {
-            return "Mutacja jednego genu";
-        }
 
+        public override string ToString() => "Mutacja jednego genu";
     }
 }

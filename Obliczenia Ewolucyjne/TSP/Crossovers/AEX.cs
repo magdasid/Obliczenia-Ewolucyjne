@@ -5,14 +5,13 @@ namespace TSP.Crossovers
 {
     public class AEX : ICrossover, ICrossoverUsingPathRepresentation
     {
-        private static Random Random = new Random();
+        private static Random Random = RandomGenerator.GetInstance();
 
         public Individual Cross(Individual[] parents, Cities cities)
         {
             int[] parent = parents[0].adjacencyList;
             int[] parent2 = parents[1].adjacencyList;
 
-            Individual child = null;
             int size = parent.Length;
             int[] childAdjacencyList = new int[size];
             int[] childTourList = new int[size];
@@ -84,14 +83,8 @@ namespace TSP.Crossovers
                 }
             }
             
-            //Console.WriteLine(string.Join(' ', used)); // wyświetli cała tablice w 1 linii  
-            //Console.WriteLine(string.Join(' ', childAdjacencyList)); // wyświetli cała tablice w 1 linii  
-
             childTourList = ConvertFromAdjacencyList(childAdjacencyList);
-            //Console.WriteLine(string.Join(' ', childTourList));
-
-            child = new Individual(cities, childTourList);
-            return child;
+            return new Individual(cities, childTourList);
         }
 
         private int[] ConvertFromAdjacencyList(int[] adjList)
@@ -110,7 +103,7 @@ namespace TSP.Crossovers
                 i++;
             }
 
-            //Console.WriteLine(string.Join(' ', tourList));
+            Console.WriteLine(string.Join(' ', tourList));
             return tourList;
         }
 

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using TSP.Interfaces;
 
 namespace TSP.Mutation
 {
     public class TranspositionMutation : IMutation
     {
-        private static Random Random = new Random();
+        private static Random Random = RandomGenerator.GetInstance();
         private double probabilityOfMutation;
 
         public TranspositionMutation(double probability)
@@ -18,12 +16,11 @@ namespace TSP.Mutation
         public Individual Mutate(Cities cities, Individual child)
         {
             if (Random.NextDouble() > probabilityOfMutation)
-            {
                 return child;
-            }
 
-            Individual mutatedChild = null;
-            int[] mutatedChildTourList = child.tourList;
+            int[] mutatedChildTourList = new int[child.tourList.Length];
+            Array.Copy(child.tourList, mutatedChildTourList, child.tourList.Length);
+
             int firstCityIndex = Random.Next(1, child.tourList.Length);
             int firstCity = child.tourList[firstCityIndex];
             int secondCityIndex = Random.Next(1, child.tourList.Length);
@@ -32,14 +29,9 @@ namespace TSP.Mutation
             mutatedChildTourList[firstCityIndex] = secondCity;
             mutatedChildTourList[secondCityIndex] = firstCity;
 
-            mutatedChild = new Individual(cities, mutatedChildTourList);
-
-            return mutatedChild;
+            return new Individual(cities, mutatedChildTourList);
         }
 
-        public override string ToString()
-        {
-            return "Transposition Mutation - losowa zamiana dwóch miast";
-        }
+        public override string ToString() => "Transposition Mutation - losowa zamiana dwóch miast";
     }
 }

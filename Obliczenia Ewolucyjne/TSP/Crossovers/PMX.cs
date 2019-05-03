@@ -5,15 +5,13 @@ namespace TSP.Crossovers
 {
     public class PMX : ICrossover, ICrossoverUsingPathRepresentation
     {
-        private static Random Random = new Random();
+        private static Random Random = RandomGenerator.GetInstance();
 
         public Individual Cross(Individual[] parents, Cities cities)
         {
             int size = parents[0].tourList.Length;
             int splitPoint1 = Random.Next(1, size);
             int splitPoint2 = Random.Next(splitPoint1 + 1, size);
-
-            Individual child = null;
 
             int[] childTourList = new int[size];
             int[] tab = new int[size];
@@ -36,7 +34,7 @@ namespace TSP.Crossovers
             {
                 if (i < splitPoint1 || i >= splitPoint2)
                 {
-                    if (Array.IndexOf(tab, parents[1].tourList[i]) == -1)
+                    if (tab.IndexOf(parents[1].tourList[i]) == -1)
                     {
                         childTourList[i] = parents[1].tourList[i];
                         tab[i] = parents[1].tourList[i];
@@ -44,28 +42,22 @@ namespace TSP.Crossovers
                     else
                     {
                         int element = parents[1].tourList[i];
-                        int elementIndex = Array.IndexOf(parents[0].tourList, element);
+                        int elementIndex = parents[0].tourList.IndexOf(element);
                         int val = parents[1].tourList[elementIndex];
-                        while (Array.IndexOf(childTourList, val) != -1)
+                        while (childTourList.IndexOf(val) != -1)
                         {
                             element = val;
-                            elementIndex = Array.IndexOf(parents[0].tourList, element);
+                            elementIndex = parents[0].tourList.IndexOf(element);
                             val = parents[1].tourList[elementIndex];
                         }
                         childTourList[i] = val;
                     }
                 }
             }
-            
-            child = new Individual(cities, childTourList);
 
-            return child;
+            return new Individual(cities, childTourList);
         }
 
-        public override string ToString()
-        {
-            return "Partially Mapped Crossover - krzyżowanie z częściowym odwzorowaniem";
-        }
-        
+        public override string ToString() => "Partially Mapped Crossover - krzyżowanie z częściowym odwzorowaniem";     
     }
 }

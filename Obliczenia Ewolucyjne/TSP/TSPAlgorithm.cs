@@ -88,8 +88,7 @@ namespace TSP
                     genotype[j] = Random.Next(1, numberOfCities - j + 1);
                 }
 
-                Individual individual = new Individual(genotype, cities);
-                population[i] = individual;
+                population[i] = new Individual(genotype, cities); ;
             }
 
             return population;

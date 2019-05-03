@@ -5,14 +5,13 @@ namespace TSP.Crossovers
 {
     public class SCC : ICrossover, ICrossoverUsingPathRepresentation
     {
-        private static Random Random = new Random();
+        private static Random Random = RandomGenerator.GetInstance();
 
         public Individual Cross(Individual[] parents, Cities cities)
         {
             int[] parent = parents[0].adjacencyList;
             int[] parent2 = parents[1].adjacencyList;
 
-            Individual child = null;
             int size = parent.Length;
             int[] childAdjacencyList = new int[size];
             int[] childTourList = new int[size];
@@ -95,40 +94,26 @@ namespace TSP.Crossovers
                 numberOfChunks--;
             }
 
-            ////Console.WriteLine(string.Join(' ', used));
-            ////Console.WriteLine(string.Join(' ', childAdjacencyList));
             childTourList = ConvertFromAdjacencyList(childAdjacencyList);
-            ////Console.WriteLine(string.Join(' ', childTourList));
-
-            child = new Individual(cities, childTourList);
-
-            return child;
+            return new Individual(cities, childTourList); ;
         }
 
         private int[] ConvertFromAdjacencyList(int[] adjList)
         {
             int[] tourList = new int[adjList.Length];
-
             int index = 0;
-
             int i = 0;
             while (i < tourList.Length)
             {
                 int value = adjList[index];
                 tourList[i] = value;
-
                 index = value - 1;
                 i++;
             }
 
-            //Console.WriteLine(string.Join(' ', tourList));
             return tourList;
         }
 
-        public override string ToString()
-        {
-            return "Subtour Chunks Crossover - Krzyżowanie przez wymianę podtras";
-
-        }
+        public override string ToString() => "Subtour Chunks Crossover - Krzyżowanie przez wymianę podtras";
     }
 }
